@@ -1,0 +1,34 @@
+---
+# https://docs.docker.com/compose/install/ 
+- name: Get the kernel name
+  command: uname -s
+  register: kernel_name
+
+- debug:
+    msg: "Kernel name: {{ kernel_name.stdout }}"
+ 
+- name: Get the machine hardware 
+  command: uname -m
+  register: machine_hardware
+
+- debug:
+    msg: "Machine hardware: {{ machine_hardware.stdout }}"
+
+- debug:
+    msg: "About to fetch https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}"
+
+- name: Docker Compose version {{ docker_compose_version }} installed 
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}"
+    dest: /usr/local/bin/docker-compose
+    force: yes
+    backup: yes
+    mode: 0755
+
+- name: Docker Compose Bash completion in place
+  get_url:
+    url: "https://raw.githubusercontent.com/docker/compose/{{ docker_compose_version }}/contrib/completion/bash/docker-compose"
+    dest: /etc/bash_completion.d/docker-compose
+    force: yes
+    backup: yes
+    mode: 0644

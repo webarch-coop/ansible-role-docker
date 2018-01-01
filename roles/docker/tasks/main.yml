@@ -1,0 +1,35 @@
+---
+# https://docs.docker.com/engine/installation/linux/debian/
+- name: Git and APT HTTPS packages installed
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - git
+    - software-properties-common
+
+- name: Docker GPG key present
+  apt_key:
+    id: 0EBFCD88
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Docker APT repo available
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/debian {{ distro }} stable"
+    state: present
+
+- name: Docker CE installed
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes
+
+- name: Docker started
+  service:
+    name: docker
+    state: started

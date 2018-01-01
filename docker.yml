@@ -1,0 +1,10 @@
+---
+# https://docs.docker.com/engine/installation/linux/docker-ce/debian/
+- name: Install Docker CE
+  hosts: "{{ hostname }}"
+
+  vars:
+    distro: stretch 
+
+  roles:
+    - docker
