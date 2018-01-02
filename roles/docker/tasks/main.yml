@@ -21,6 +21,7 @@
 - name: Docker APT repo available
   apt_repository:
     repo: "deb https://download.docker.com/linux/debian {{ distro }} stable"
+    filename: "docker"
     state: present
 
 - name: Docker CE installed
