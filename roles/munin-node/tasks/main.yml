@@ -1,0 +1,89 @@
+---
+- name: Munin node packages installed
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - munin-node
+    - munin-plugins-core
+    - munin-plugins-extra
+    - libwww-perl
+    - time
+    - libcache-cache-perl
+
+- name: Munin docker_cpu plugin in place
+  copy:
+    src: files/docker_cpu
+    dest: /usr/share/munin/plugins/docker_cpu
+    mode: 0755
+
+- name: Munin docker_cpu plugin enabled
+  file:
+    src: /usr/share/munin/plugins/docker_cpu
+    dest: /etc/munin/plugins/docker_cpu
+    state: link
+
+- name: Munin docker_memory plugin in place
+  copy:
+    src: files/docker_memory
+    dest: /usr/share/munin/plugins/docker_memory
+    mode: 0755
+
+- name: Munin docker_memory plugin enabled
+  file:
+    src: /usr/share/munin/plugins/docker_memory
+    dest: /etc/munin/plugins/docker_memory
+    state: link
+
+- name: Munin Docker plugins enabled
+  copy:
+    src: files/docker
+    dest: /etc/munin/plugin-conf.d/docker
+    mode: 0644
+
+- name: Munin client node conf in place
+  copy:
+    src: files/munin-node.conf
+    dest: /etc/munin/munin-node.conf
+    backup: yes
+
+- name: Distro set to {{ distro }} in munin apt_all plugin
+  lineinfile:
+    state: present
+    line: "my @releases = ('{{ distro }}');"
+    regexp: "^my @releases"
+    dest: "/usr/share/munin/plugins/apt_all"
+
+- name: Munin apt_all plugin symlinked
+  file:
+    src: /usr/share/munin/plugins/apt_all
+    dest: /etc/munin/plugins/apt_all
+    state: link
+
+- name: Munin multips_memory plugin symlinked
+  file:
+    src: /usr/share/munin/plugins/multips_memory
+    dest: /etc/munin/plugins/multips_memory
+    state: link
+
+- name: Munin multips plugin symlinked
+  file:
+    src: /usr/share/munin/plugins/multips
+    dest: /etc/munin/plugins/multips
+    state: link
+
+- name: Munin multips_memory and multips plugin enabled
+  blockinfile:
+    path: /etc/munin/plugin-conf.d/munin-node
+    block: |
+    [multips]
+    env.names dockerd docker-containe
+    [multips_memory]
+    env.names dockerd docker-containe
+
+- name: Munin node restarted
+  service:
+    name: munin-node
+    state: restarted
+
