@@ -7,7 +7,7 @@ Ansible Playbooks to install [Docker CE](https://docs.docker.com/engine/installa
 Debian Stretch ships with Ansible 2.2 and this is now rather old, so to update your local machine to 2.4 from [Debian Backports](https://backports.debian.org/), first add the backports repo (in this case using a UK based mirror which supports HTTPS) and then install Ansible:
 
 ```bash
-sudo -i
+sudo -i # or run `su - root` if you are not a sudoer
 echo "deb https://mirrorservice.org/sites/ftp.debian.org/debian/ stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list
 apt update
 apt -t stretch-backports install ansible
@@ -31,18 +31,21 @@ export SERVERNAME="example.org"
 ansible-playbook docker.yml -u root -i ${SERVERNAME}, -e "hostname=${SERVERNAME}"
 ```
 
-Install Docker CE on your local machine (assuming you are a sudoer, you might need to run `sudo -i ; exit` if you don't have password-less sudo):
+Install Docker CE on your local machine (assuming you are a sudoer, you will need to run `sudo -i ; exit` first if you don't have password-less sudo) and add yourself to the `docker` group:
 
 ```bash
 ansible-playbook docker.yml --extra-vars "hostname=localhost" -i "localhost," -c local
+usermod -a -G docker ${SUDO_USER}
+exit
 ```
 
 NOTE: If you have a different `control_path_dir` set in `~/.ansible.cfg` from the default in `/etc/ansible/ansible.cfg` then you might need to run this as `root` rather than using `sudo`:
 
-
 ```bash
-su - root
+sudo -i # or run `su - root` if you are not a sudoer
 ansible-playbook docker.yml --extra-vars "hostname=localhost" -i "localhost," -c local
+usermod -a -G docker ${SUDO_USER}
+exit
 ```
 
 ## Install or Upgrade Docker Compose
@@ -73,7 +76,7 @@ NOTE: If you have a different `control_path_dir` set in `~/.ansible.cfg` from th
 
 
 ```bash
-su - root
+sudo -i # or run `su - root` if yo are not a sudoer
 ansible-playbook docker_compose.yml --extra-vars "hostname=localhost" -i "localhost," -c local
 ```
 
