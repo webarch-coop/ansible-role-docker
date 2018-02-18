@@ -30,6 +30,21 @@ Install Docker CE on a remote server as `root`:
 export SERVERNAME="example.org"
 ansible-playbook docker.yml -u root -i ${SERVERNAME}, -e "hostname=${SERVERNAME}"
 ```
+
+Install Docker CE on your local machine (assuming you are a sudoer, you might need to run `sudo -i ; exit` if you don't have password-less sudo):
+
+```bash
+ansible-playbook docker.yml --extra-vars "hostname=localhost" -i "localhost," -c local
+```
+
+NOTE: If you have a different `control_path_dir` set in `~/.ansible.cfg` from the default in `/etc/ansible/ansible.cfg` then you might need to run this as `root` rather than using `sudo`:
+
+
+```bash
+su - root
+ansible-playbook docker.yml --extra-vars "hostname=localhost" -i "localhost," -c local
+```
+
 ## Install or Upgrade Docker Compose
 
 You can find which the latest version of `docker-compose` is on the [Docker Compose Releases page](https://github.com/docker/compose/releases).
@@ -48,17 +63,17 @@ export SERVERNAME="example.org"
 ansible-playbook docker_compose.yml -u root -i ${SERVERNAME}, -e "hostname=${SERVERNAME}"
 ```
 
-Install locally (assuming you are a sudoer, you might need to run `sudo -i ; exit` if you don't have password-less sudo):
+Install Docker Compose on your local machine (assuming you are a sudoer, you might need to run `sudo -i ; exit` if you don't have password-less sudo):
 
 ```bash
-ansible-playbook --extra-vars "hostname=localhost" -i "localhost," -c local docker_compose.yml
+ansible-playbook docker_compose.yml --extra-vars "hostname=localhost" -i "localhost," -c local 
 ```
 
 NOTE: If you have a different `control_path_dir` set in `~/.ansible.cfg` from the default in `/etc/ansible/ansible.cfg` then you might need to run this as `root` rather than using `sudo`:
 
 
 ```bash
-sudo -i
-ansible-playbook --extra-vars "hostname=localhost" -i "localhost," -c local docker_compose.yml
+su - root
+ansible-playbook docker_compose.yml --extra-vars "hostname=localhost" -i "localhost," -c local
 ```
 
