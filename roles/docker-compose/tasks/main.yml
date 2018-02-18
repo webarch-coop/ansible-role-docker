@@ -15,15 +15,42 @@
     msg: "Machine hardware: {{ machine_hardware.stdout }}"
 
 - debug:
-    msg: "About to fetch https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}"
+    msg: "About to fetch https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }} and https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
 
-- name: Docker Compose version {{ docker_compose_version }} installed 
+- name: Temporary download directory
+  tempfile:
+    state: directory
+    suffix: docker-compose
+  register: download_dir
+
+- debug:
+    msg: "Temp download path: {{ download_dir.path }}" 
+
+- name: Docker Compose version {{ docker_compose_version }} checksum downloaded
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
+    dest: "{{ download_dir.path }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
+
+- set_fact:
+    docker_compose_sha256: "{{ lookup('file', '{{ download_dir.path }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256') }}" 
+
+- debug:
+    msg: "Checksum from sha256 file: {{ docker_compose_sha256 }}"
+
+- name: Docker Compose version {{ docker_compose_version }} downloaded and installed
   get_url:
     url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}"
     dest: /usr/local/bin/docker-compose
     force: yes
-    backup: yes
     mode: 0755
+    checksum: "sha256:{{ docker_compose_sha256 }}"
+
+- name: Check the version
+  command: docker-compose --version
+  register: docker_compose_version_installed
+
+- debug:
+    msg: "The Docker Compose version installed is now: {{ docker_compose_version_installed.stdout }}"
 
 - name: Docker Compose Bash completion in place
   get_url:

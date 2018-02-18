@@ -1,6 +1,7 @@
 ---
 - name: Upgrade Docker Compose 
   hosts: "{{ hostname }}"
+  become: yes
 
   vars:
     distro: stretch 
@@ -10,7 +11,7 @@
     - name: "docker_compose_version"
       prompt: "The Docker Compose version from https://github.com/docker/compose/releases"
       private: no
-      default: "1.18.0"
+      default: "1.19.0"
 
   roles:
     - docker-compose
