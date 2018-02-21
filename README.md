@@ -35,6 +35,7 @@ Install Docker CE on your local machine (assuming you are a sudoer, you will nee
 
 ```bash
 ansible-playbook docker.yml --extra-vars "hostname=localhost" -i "localhost," -c local
+sudo -i
 usermod -a -G docker ${SUDO_USER}
 exit
 ```
