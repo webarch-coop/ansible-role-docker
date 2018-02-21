@@ -31,10 +31,6 @@
     url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
     dest: "{{ download_dir.path }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
 
-- stat:
-    path: "{{ download_dir.path }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
-  register: docker_compose_sha256_file
-
 - name: Slurp a base64 encoded version of the sha256 checksum
   slurp:
     src: "{{ download_dir.path }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
