@@ -38,10 +38,17 @@
 
 - name: Decode the base64 encoded version of the sha256 checksum
   set_fact:
-    docker_compose_sha256: "{{ docker_compose_sha256_b64encoded['content'] | b64decode }}"
+    docker_compose_sha256_file: "sha256:{{ docker_compose_sha256_b64encoded['content'] | b64decode }}"
 
 - debug:
-    msg: "Checksum from sha256 file: {{ docker_compose_sha256 }}"
+    msg: "Full string from the sha256 file: {{ docker_compose_sha256_file }}"
+
+- name: Split the string in the file on spaces, save the first value
+  set_fact:
+    docker_compose_sha256: "{{ docker_compose_sha256_file.split(' ')[0] }}"
+
+- debug:
+    msg: "First value from the sha256 file: {{ docker_compose_sha256 }}"
 
 - name: Docker Compose version {{ docker_compose_version }} downloaded and installed
   get_url:
@@ -49,7 +56,7 @@
     dest: /usr/local/bin/docker-compose
     force: yes
     mode: 0755
-    checksum: "sha256:{{ docker_compose_sha256 }}"
+    checksum: "{{ docker_compose_sha256 }}"
 
 - name: Check the version
   command: docker-compose --version
