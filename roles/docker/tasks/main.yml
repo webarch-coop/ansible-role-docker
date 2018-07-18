@@ -10,6 +10,7 @@
     - ca-certificates
     - curl
     - git
+    - python-docker
     - software-properties-common
 
 - name: Docker GPG key present
