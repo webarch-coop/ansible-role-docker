@@ -35,6 +35,7 @@
   template:
     src: templates/daemon.json.j2
     dest: /etc/docker/daemon.json
+  when: ( nameserver_1 is defined and nameserver_1 != '' and nameserver_1 != None ) and ( nameserver_2 is defined and nameserver_2 != '' and nameserver_2 != None )
 
 - name: Docker started
   service:
