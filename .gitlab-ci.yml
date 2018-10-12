@@ -1,0 +1,9 @@
+before_script:
+  - echo "deb https://deb.debian.org/debian/ stretch-backports main" >> /etc/apt/sources.list
+  - apt-get update
+  - apt-get -y install rsync python procps
+  - apt-get -t stretch-backports install ansible
+test:
+  script:
+    - ansible-playbook --extra-vars "hostname=localhost" -i "localhost," -c local docker.yml
+
