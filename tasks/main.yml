@@ -42,10 +42,8 @@
     state: started
 
 # This should be conditional on something...
-- tasks:
-    include_tasks: docker_compose.yml
+- include_tasks: docker_compose.yml
 
 # This should only be included if munin-node is installed already
-- tasks:
-    include_tasks: munin_node.yml
+- include_tasks: munin_node.yml
     
