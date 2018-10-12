@@ -40,3 +40,10 @@
   service:
     name: docker
     state: started
+
+- name: Include Docker Compose 
+  include_tasks: docker_compose.yml
+
+- name: Include Munin Node 
+  include_tasks: munin_node.yml
+    
