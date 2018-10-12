@@ -5,9 +5,7 @@ before_script:
   - apt-get update
   - apt-get -y upgrade
   - apt-get -y -t stretch-backports install ansible
-  - free -h
-  - cat /proc/cpuinfo | grep ^processor
 test:
   script:
-    - ansible-playbook --extra-vars "hostname=localhost" -i "localhost," -c local docker.yml -v
+    - ansible-playbook --extra-vars "hostname=localhost" -i "localhost," -c local docker.yml 
 
