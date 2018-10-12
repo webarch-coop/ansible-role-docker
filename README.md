@@ -8,7 +8,7 @@ This role is best imported into another repo which needs Docker, using `ansible-
 ansible-galaxy install -r requirements.yml --force -p roles 
 ```
 
-Where the `requirements.yml` file contains:
+Where the `requirements.yml` file, in the repo you want to pull this role into, contains:
 
 ```yml
 ---
@@ -18,16 +18,10 @@ Where the `requirements.yml` file contains:
   scm: git
 ```
 
-## Ansible 2.6
+Best to also add the role to the `.gitignore` file in the repo you want to pull this role into:
 
-Debian Stretch ships with Ansible 2.2 and this is now rather old, so to update your local machine to 2.6 from [Debian Backports](https://backports.debian.org/), first add the backports repo and then install Ansible:
-
-```bash
-sudo -i # or run `su - root` if you are not a sudoer
-apt install apt-transport-https
-echo "deb https://deb.debian.org/debian/ stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list
-apt update
-apt -y -t stretch-backports install ansible
+```
+roles/docker
 ```
 
 ## Install Docker CE
@@ -98,3 +92,14 @@ sudo -i # or run `su - root` if you are not a sudoer
 ansible-playbook docker_compose.yml --extra-vars "hostname=localhost" -i "localhost," -c local
 ```
 
+## Ansible 2.6
+
+Debian Stretch ships with Ansible 2.2 and this is now rather old, so to update your local machine to 2.6 from [Debian Backports](https://backports.debian.org/), first add the backports repo and then install Ansible:
+
+```bash
+sudo -i # or run `su - root` if you are not a sudoer
+apt install apt-transport-https
+echo "deb https://deb.debian.org/debian/ stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list
+apt update
+apt -y -t stretch-backports install ansible
+```
