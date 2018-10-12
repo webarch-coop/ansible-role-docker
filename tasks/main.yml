@@ -46,5 +46,6 @@
   include_tasks: docker_compose.yml
   when: docker_compose_version is defined and docker_compose_version != '' and docker_compose_version != None
 
-# This should only be included if munin-node is installed already
-- include_tasks: munin_node.yml
+- name: Optionally include the Munin Node tasks
+  include_tasks: munin_node.yml
+  when: munin_node_install is defined and munin_node_install == True 
