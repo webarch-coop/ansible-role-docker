@@ -1,6 +1,22 @@
 # Install Docker on Debian 
 
-Ansible Playbooks to install [Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/debian/) and [Docker Compose](https://docs.docker.com/compose/install/) on Debian Stretch.
+Ansible Role and Playbooks to install [Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/debian/) and [Docker Compose](https://docs.docker.com/compose/install/) on Debian Stretch.
+
+This role is best imported into another repo which needs Docker, using `ansible-galaxy`:
+
+```bash
+ansible-galaxy install -r requirements.yml --force -p roles 
+```
+
+Where the `requirements.yml` file contains:
+
+```yml
+---
+- name: docker
+  src: https://git.coop/webarch/docker.git
+  version: master
+  scm: git
+```
 
 ## Ansible 2.4
 
@@ -31,7 +47,7 @@ export SERVERNAME="example.org"
 ansible-playbook docker.yml -u root -i ${SERVERNAME}, -e "hostname=${SERVERNAME}"
 ```
 
-Install Docker CE on your local machine (assuming you are a sudoer, you will need to run `sudo -i ; exit` first if you don't have password-less sudo) and add yourself to the `docker` group:
+Install Docker CE on your local machine (assuming you are a sudoer, you will need to run `sudo -i` first if you don't have password-less sudo an dthen change to the directory where this repo has been cloned) and add yourself to the `docker` group:
 
 ```bash
 ansible-playbook docker.yml --extra-vars "hostname=localhost" -i "localhost," -c local
