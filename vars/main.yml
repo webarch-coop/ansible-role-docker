@@ -3,12 +3,7 @@ vars:
   distro: stretch
   nameserver_1: 81.95.52.30
   nameserver_2: 81.95.52.27
-
-vars_prompt:
-
-  - name: "docker_compose_version"
-    prompt: "The Docker Compose version from https://github.com/docker/compose/releases"
-    private: no
-    default: "1.22.0"
+  # The Docker Compose version from https://github.com/docker/compose/releases
+  docker_compose_version: 1.22.0
 
 
