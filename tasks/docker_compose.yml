@@ -6,6 +6,7 @@
 
 - debug:
     msg: "Kernel name: {{ kernel_name.stdout }}"
+    verbosity: 1
  
 - name: Get the machine hardware 
   command: uname -m
@@ -13,9 +14,11 @@
 
 - debug:
     msg: "Machine hardware: {{ machine_hardware.stdout }}"
+    verbosity: 1
 
 - debug:
     msg: "About to fetch https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }} and https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
+    verbosity: 1
 
 - name: Temporary download directory
   tempfile:
@@ -25,6 +28,7 @@
 
 - debug:
     msg: "Temp download path: {{ download_dir.path }}" 
+    verbosity: 1
 
 - name: Docker Compose version {{ docker_compose_version }} checksum downloaded
   get_url:
@@ -42,6 +46,7 @@
 
 - debug:
     msg: "Full string from the sha256 file: {{ docker_compose_sha256_file }}"
+    verbosity: 1
 
 - name: Split the string in the file on spaces, save the first value
   set_fact:
@@ -49,6 +54,7 @@
 
 - debug:
     msg: "First value from the sha256 file: {{ docker_compose_sha256 }}"
+    verbosity: 1
 
 - name: Docker Compose version {{ docker_compose_version }} downloaded and installed
   get_url:
@@ -64,6 +70,7 @@
 
 - debug:
     msg: "The Docker Compose version installed is now: {{ docker_compose_version_installed.stdout }}"
+    verbosity: 1
 
 - name: Docker Compose Bash completion in place
   get_url:

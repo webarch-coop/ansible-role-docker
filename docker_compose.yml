@@ -1,5 +1,5 @@
 ---
-- name: Upgrade Docker Compose 
+- name: Install or Upgrade Docker Compose 
   hosts: "{{ hostname }}"
   become: yes
 

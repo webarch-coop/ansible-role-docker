@@ -24,6 +24,12 @@ Best to also add the role to the `.gitignore` file in the repo you want to pull 
 roles/docker
 ```
 
+If you want to install Docker Compose then you need to do is define the `docker_compose_version` variable, see the [releases page](https://github.com/docker/compose/releases) to get the string, for example `1.22.0`, if this variable isn't defined then `docker-compose` won't be installed.
+
+If the `nameserver_1` and `nameserver_2` variables are defined then the IP addresses they contain will be added to `/etc/docker/daemon.json` as `dns` servers for Docker (by default Docker uses Google DNS servers) and if they are undefined nothing will be done.
+
+If `munin_node_install` is set to `True` then `munin-node` will be configured for the Webarchitects Munin server, if the variable isn't defined then this will be skipped. 
+
 ## Install Docker CE
 
 The [Docker CE release notes](https://docs.docker.com/release-notes/docker-ce/) should list the latest version but they are not always updated as often as versions are released.
