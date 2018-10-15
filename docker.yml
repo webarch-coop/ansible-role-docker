@@ -1,6 +1,5 @@
 ---
-# https://docs.docker.com/engine/installation/linux/docker-ce/debian/
-- name: Install Docker CE
+- name: Install Docker CE and Docker Compose
   hosts: "{{ hostname }}"
   become: yes
 
