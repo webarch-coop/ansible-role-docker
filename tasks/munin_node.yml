@@ -77,10 +77,10 @@
   blockinfile:
     path: /etc/munin/plugin-conf.d/munin-node
     block: |
-    [multips]
-    env.names dockerd docker-containe
-    [multips_memory]
-    env.names dockerd docker-containe
+      [multips]
+      env.names dockerd docker-containe
+      [multips_memory]
+      env.names dockerd docker-containe
 
 - name: Munin node restarted
   service:

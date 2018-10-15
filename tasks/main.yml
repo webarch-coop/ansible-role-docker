@@ -31,12 +31,26 @@
     state: present
     update_cache: yes
 
+- name: /etc/docker present
+  file:
+    path: /etc/docker 
+    state: directory
+
 - name: Docker DNS servers configured
   template:
     src: templates/daemon.json.j2
     dest: /etc/docker/daemon.json
+  when: ( nameserver_1 is defined and nameserver_1 != '' and nameserver_1 != None ) and ( nameserver_2 is defined and nameserver_2 != '' and nameserver_2 != None )
 
 - name: Docker started
   service:
     name: docker
     state: started
+
+- name: Optionally include the Docker Compose tasks
+  include_tasks: docker_compose.yml
+  when: docker_compose_version is defined and docker_compose_version != '' and docker_compose_version != None
+
+- name: Optionally include the Munin Node tasks
+  include_tasks: munin_node.yml
+  when: munin_node_install is defined and munin_node_install == True 
