@@ -7,7 +7,7 @@
     distro: stretch 
     nameserver_1: 81.95.52.30
     nameserver_2: 81.95.52.27
-    docker_compose_version: 1.22.0
+    docker_compose_version: 1.23.1
     munin_node_install: True    
 
   roles:
