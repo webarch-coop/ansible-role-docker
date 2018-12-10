@@ -1,5 +1,5 @@
 ---
-# https://docs.docker.com/compose/install/ 
+# https://docs.docker.com/compose/install/
 - name: Get the kernel name
   command: uname -s
   register: kernel_name
@@ -7,8 +7,8 @@
 - debug:
     msg: "Kernel name: {{ kernel_name.stdout }}"
     verbosity: 1
- 
-- name: Get the machine hardware 
+
+- name: Get the machine hardware
   command: uname -m
   register: machine_hardware
 
@@ -27,7 +27,7 @@
   register: download_dir
 
 - debug:
-    msg: "Temp download path: {{ download_dir.path }}" 
+    msg: "Temp download path: {{ download_dir.path }}"
     verbosity: 1
 
 - name: Docker Compose version {{ docker_compose_version }} checksum downloaded

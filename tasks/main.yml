@@ -33,7 +33,7 @@
 
 - name: /etc/docker present
   file:
-    path: /etc/docker 
+    path: /etc/docker
     state: directory
 
 - name: Docker DNS servers configured
@@ -53,4 +53,4 @@
 
 - name: Optionally include the Munin Node tasks
   include_tasks: munin_node.yml
-  when: munin_node_install is defined and munin_node_install == True 
+  when: munin_node_install is defined and munin_node_install == True
