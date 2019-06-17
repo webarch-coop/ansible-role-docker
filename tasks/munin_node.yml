@@ -1,16 +1,16 @@
 ---
 - name: Munin node packages installed
   apt:
-    pkg: "{{ item }}"
-    state: latest
-    update_cache: yes
+    pkg:
+      - munin-node
+      - munin-plugins-core
+      - munin-plugins-extra
+      - libwww-perl
+      - time
+      - libcache-cache-perl
+    state: present
+    update_cache: true
   with_items:
-    - munin-node
-    - munin-plugins-core
-    - munin-plugins-extra
-    - libwww-perl
-    - time
-    - libcache-cache-perl
 
 - name: Munin docker_cpu plugin in place
   copy:
@@ -46,7 +46,7 @@
   copy:
     src: files/munin-node.conf
     dest: /etc/munin/munin-node.conf
-    backup: yes
+    backup: true
 
 - name: Distro set to {{ distro }} in munin apt_all plugin
   lineinfile:
@@ -86,4 +86,3 @@
   service:
     name: munin-node
     state: restarted
-

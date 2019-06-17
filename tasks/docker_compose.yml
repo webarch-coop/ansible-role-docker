@@ -60,7 +60,7 @@
   get_url:
     url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}"
     dest: /usr/local/bin/docker-compose
-    force: yes
+    force: true
     mode: 0755
     checksum: "{{ docker_compose_sha256 }}"
 
@@ -76,6 +76,6 @@
   get_url:
     url: "https://raw.githubusercontent.com/docker/compose/{{ docker_compose_version }}/contrib/completion/bash/docker-compose"
     dest: /etc/bash_completion.d/docker-compose
-    force: yes
-    backup: yes
+    force: true
+    backup: true
     mode: 0644

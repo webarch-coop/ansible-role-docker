@@ -1,10 +1,10 @@
 ---
-- name: Install or Upgrade Docker Compose 
+- name: Install or Upgrade Docker Compose
   hosts: "{{ hostname }}"
-  become: yes
+  become: true
 
   vars:
-    distro: stretch 
+    distro: stretch
 
   vars_prompt:
 
