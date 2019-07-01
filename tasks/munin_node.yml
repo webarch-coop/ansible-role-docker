@@ -10,7 +10,6 @@
       - libcache-cache-perl
     state: present
     update_cache: true
-  with_items:
 
 - name: Munin docker_cpu plugin in place
   copy:
