@@ -66,7 +66,7 @@
   template:
     src: templates/daemon.json.j2
     dest: /etc/docker/daemon.json
-  when: ( docker_nameservers is defined ) and ( docker_nameservers != [] ) 
+  when: ( docker_nameservers is defined ) and ( docker_nameservers != [] )
   tags:
     - docker
 
