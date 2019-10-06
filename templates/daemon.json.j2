@@ -1,5 +1,4 @@
 {
-    "dns": ["{{ nameserver_1 }}", "{{ nameserver_1 }}"],
+    "dns": [{% for ns in docker_nameservers %}"{{ ns }}"{{ ", " if not loop.last else "" }}{% endfor %}],
     "storage-driver": "overlay2"
 }
-

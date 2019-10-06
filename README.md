@@ -1,11 +1,11 @@
 # Install Docker on Debian 
 
-Ansible Role and Playbooks to install [Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/debian/) and [Docker Compose](https://docs.docker.com/compose/install/) on Debian Stretch.
+Ansible Role and Playbooks to install [Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/debian/) and [Docker Compose](https://docs.docker.com/compose/install/) on Debian Buster.
 
 This role is best imported into another repo which needs Docker, using Ansible Galaxy (the following command will download / update this repo in `roles/docker`):
 
 ```bash
-ansible-galaxy install -r requirements.yml --force -p roles 
+ansible-galaxy install -r requirements.yml --force
 ```
 
 Where the `requirements.yml` file, in the repo you want to pull this role into, contains:
@@ -18,10 +18,22 @@ Where the `requirements.yml` file, in the repo you want to pull this role into, 
   scm: git
 ```
 
+The galaxy path for installing the roles can be set in a `ansible.cgf` file like this:
+
+```yml
+[defaults]
+retry_files_enabled = False
+pipelining = True
+inventory = hosts.yml
+roles_path = galaxy/roles
+allow_world_readable_tmpfiles = True
+force_color = 1
+```
+
 Best to also add the role to the `.gitignore` file in the repo you want to pull this role into:
 
 ```
-roles/docker
+galaxy/roles/docker
 ```
 
 This repo contains symlinks in the `roles` directory in order that it can be use as a stand alone repo to install Docker CE and Docker Compose without the use of Ansible Galaxy. 
@@ -30,9 +42,9 @@ This repo contains symlinks in the `roles` directory in order that it can be use
 
 If you want to install Docker Compose then you need to define the `docker_compose_version` variable, see the [releases page](https://github.com/docker/compose/releases) to get the string, for example `1.22.0`, if this variable isn't defined then `docker-compose` won't be installed.
 
-If the `nameserver_1` and `nameserver_2` variables are defined then the IP addresses they contain will be added to `/etc/docker/daemon.json` as `dns` servers for Docker (by default Docker uses Google DNS servers) and if they are undefined nothing will be done.
+If the `docker_nameservers` array is defined then the IP addresses they contain will be added to `/etc/docker/daemon.json` as `dns` servers for Docker (by default Docker uses Google DNS servers) and if they are undefined nothing will be done.
 
-If `munin_node_install` is set to `True` then `munin-node` will be configured for the Webarchitects Munin server, if the variable isn't defined then this will be skipped. 
+If `docker_munin_node_install` is set to `True` then `munin-node` will be configured for the Webarchitects Munin server, if the variable isn't defined then this will be skipped. 
 
 ## Install Docker CE
 
@@ -86,14 +98,3 @@ sudo -i
 ansible-playbook docker_compose.yml --extra-vars "hostname=localhost" -i "localhost," -c local 
 ```
 
-## Ansible 2.6
-
-Debian Stretch ships with Ansible 2.2 and this is now rather old, so to update your local machine to 2.6 from [Debian Backports](https://backports.debian.org/), first add the backports repo and then install Ansible:
-
-```bash
-sudo -i
-apt install apt-transport-https
-echo "deb https://deb.debian.org/debian/ stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list
-apt update
-apt -y -t stretch-backports install ansible
-```

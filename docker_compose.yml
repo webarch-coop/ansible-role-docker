@@ -3,9 +3,6 @@
   hosts: "{{ hostname }}"
   become: true
 
-  vars:
-    distro: stretch
-
   vars_prompt:
 
     - name: "docker_compose_version"
@@ -15,3 +12,4 @@
 
   roles:
     - docker-compose
+...

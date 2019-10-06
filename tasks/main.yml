@@ -1,5 +1,4 @@
 ---
-# https://docs.docker.com/engine/installation/linux/debian/
 - name: Git and APT HTTPS packages installed
   apt:
     pkg:
@@ -7,22 +6,45 @@
       - ca-certificates
       - curl
       - git
+      - lsb-release
       - python-docker
       - software-properties-common
     state: present
     update_cache: false
+  tags:
+    - docker
 
+- name: Check the distro version using lsb_release
+  shell: "lsb_release -c | awk '{ print $2 }'"
+  register: docker_distro_check
+  changed_when: false
+  check_mode: false
+  tags:
+    - docker
+
+- name: Set docker_distro if not defined
+  set_fact:
+    docker_distro: "{{ docker_distro_check.stdout }}"
+  when: docker_distro is not defined
+  tags:
+    - docker
+
+# https://docs.docker.com/engine/installation/linux/debian/
 - name: Docker GPG key present
   apt_key:
     id: 0EBFCD88
     url: https://download.docker.com/linux/debian/gpg
     state: present
+  tags:
+    - docker
 
 - name: Docker APT repo available
   apt_repository:
-    repo: "deb https://download.docker.com/linux/debian {{ distro }} stable"
+    repo: "deb https://download.docker.com/linux/debian {{ docker_distro }} stable"
     filename: "docker"
     state: present
+  tags:
+    - docker
 
 - name: Docker CE installed
   apt:
@@ -30,27 +52,42 @@
       - docker-ce
     state: present
     update_cache: true
+  tags:
+    - docker
 
 - name: /etc/docker present
   file:
     path: /etc/docker
     state: directory
+  tags:
+    - docker
 
 - name: Docker DNS servers configured
   template:
     src: templates/daemon.json.j2
     dest: /etc/docker/daemon.json
-  when: ( nameserver_1 is defined and nameserver_1 != '' and nameserver_1 != None ) and ( nameserver_2 is defined and nameserver_2 != '' and nameserver_2 != None )
+  when: ( docker_nameservers is defined ) and ( docker_nameservers != [] ) 
+  tags:
+    - docker
 
 - name: Docker started
   service:
     name: docker
     state: started
+  tags:
+    - docker
 
 - name: Optionally include the Docker Compose tasks
   include_tasks: docker_compose.yml
   when: ( docker_compose_version is defined ) and ( docker_compose_version != '' ) and ( docker_compose_version != None )
+  tags:
+    - docker-compose
+    - docker
 
 - name: Optionally include the Munin Node tasks
   include_tasks: munin_node.yml
-  when: ( munin_node_install is defined ) and ( munin_node_install == True )
+  when: ( docker_munin_node_install is defined ) and ( docker_munin_node_install == True )
+  tags:
+    - docker
+    - munin
+...

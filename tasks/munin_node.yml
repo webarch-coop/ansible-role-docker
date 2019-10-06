@@ -9,68 +9,101 @@
       - time
       - libcache-cache-perl
     state: present
-    update_cache: true
+    update_cache: false
+  tags:
+    - docker
+    - munin
 
 - name: Munin docker_cpu plugin in place
   copy:
     src: files/docker_cpu
     dest: /usr/share/munin/plugins/docker_cpu
     mode: 0755
+  tags:
+    - docker
+    - munin
 
 - name: Munin docker_cpu plugin enabled
   file:
     src: /usr/share/munin/plugins/docker_cpu
     dest: /etc/munin/plugins/docker_cpu
     state: link
+  tags:
+    - docker
+    - munin
 
 - name: Munin docker_memory plugin in place
   copy:
     src: files/docker_memory
     dest: /usr/share/munin/plugins/docker_memory
     mode: 0755
+  tags:
+    - docker
+    - munin
 
 - name: Munin docker_memory plugin enabled
   file:
     src: /usr/share/munin/plugins/docker_memory
     dest: /etc/munin/plugins/docker_memory
     state: link
+  tags:
+    - docker
+    - munin
 
 - name: Munin Docker plugins enabled
   copy:
     src: files/docker
     dest: /etc/munin/plugin-conf.d/docker
     mode: 0644
+  tags:
+    - docker
+    - munin
 
 - name: Munin client node conf in place
   copy:
     src: files/munin-node.conf
     dest: /etc/munin/munin-node.conf
     backup: true
+  tags:
+    - docker
+    - munin
 
-- name: Distro set to {{ distro }} in munin apt_all plugin
+- name: Distro set to {{ docker_distro }} in munin apt_all plugin
   lineinfile:
     state: present
-    line: "my @releases = ('{{ distro }}');"
+    line: "my @releases = ('{{ docker_distro }}');"
     regexp: "^my @releases"
     dest: "/usr/share/munin/plugins/apt_all"
+  tags:
+    - docker
+    - munin
 
 - name: Munin apt_all plugin symlinked
   file:
     src: /usr/share/munin/plugins/apt_all
     dest: /etc/munin/plugins/apt_all
     state: link
+  tags:
+    - docker
+    - munin
 
 - name: Munin multips_memory plugin symlinked
   file:
     src: /usr/share/munin/plugins/multips_memory
     dest: /etc/munin/plugins/multips_memory
     state: link
+  tags:
+    - docker
+    - munin
 
 - name: Munin multips plugin symlinked
   file:
     src: /usr/share/munin/plugins/multips
     dest: /etc/munin/plugins/multips
     state: link
+  tags:
+    - docker
+    - munin
 
 - name: Munin multips_memory and multips plugin enabled
   blockinfile:
@@ -80,8 +113,15 @@
       env.names dockerd docker-containe
       [multips_memory]
       env.names dockerd docker-containe
+  tags:
+    - docker
+    - munin
 
 - name: Munin node restarted
   service:
     name: munin-node
     state: restarted
+  tags:
+    - docker
+    - munin
+...
