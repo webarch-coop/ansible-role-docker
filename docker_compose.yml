@@ -3,13 +3,6 @@
   hosts: "{{ hostname }}"
   become: true
 
-  vars_prompt:
-
-    - name: "docker_compose_version"
-      prompt: "The Docker Compose version from https://github.com/docker/compose/releases"
-      private: false
-      default: "1.24.1"
-
   roles:
     - docker-compose
 ...
