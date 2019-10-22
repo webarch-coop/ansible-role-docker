@@ -37,7 +37,7 @@
   tags:
     - docker-compose
 
-- name: Check what the latest version of Docker Compose 
+- name: Check what the latest version of Docker Compose
   uri:
     url: https://github.com/docker/compose/releases/latest
     method: HEAD
@@ -62,7 +62,7 @@
   set_fact:
     docker_compose_version: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
   tags:
-    - docker-compose 
+    - docker-compose
 
 - name: Install or upgrade Docker Compose
   block:
