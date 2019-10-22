@@ -23,7 +23,7 @@
 
 - name: Which Docker Compose
   shell: which docker-compose || echo NOTFOUND
-  check-mode: false
+  check_mode: false
   register: docker_compose_path
   changed_when: '"NOTFOUND" in docker_compose_path.stdout'
   tags:
@@ -31,7 +31,7 @@
 
 - name: Docker Compose Version
   shell: docker-compose -v | awk '{ print $3 }' | sed 's/,$//'
-  check-mode: false
+  check_mode: false
   register: docker_compose_installed
   when: '"docker-compose" in docker_compose_path.stdout'
   tags:
