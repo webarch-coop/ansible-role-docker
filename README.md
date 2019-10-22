@@ -40,7 +40,7 @@ This repo contains symlinks in the `roles` directory in order that it can be use
 
 ## Optional Variables
 
-If you want to install Docker Compose then you need to define the `docker_compose_version` variable, see the [releases page](https://github.com/docker/compose/releases) to get the string, for example `1.24.1`, if this variable isn't defined then `docker-compose` won't be installed.
+The Docker Compose role did behave as follows but will now get the latest version form GitHub, this needs updating: *If you want to install Docker Compose then you need to define the `docker_compose_version` variable, see the [releases page](https://github.com/docker/compose/releases) to get the string, for example `1.24.1`, if this variable isn't defined then `docker-compose` won't be installed.*
 
 If the `docker_nameservers` array is defined then the IP addresses they contain will be added to `/etc/docker/daemon.json` as `dns` servers for Docker (by default Docker uses Google DNS servers) and if they are undefined nothing will be done.
 
