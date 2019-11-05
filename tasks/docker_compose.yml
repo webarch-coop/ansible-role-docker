@@ -33,7 +33,7 @@
   shell: docker-compose -v | awk '{ print $3 }' | sed 's/,$//'
   check_mode: false
   register: docker_compose_installed
-  when: '"docker-compose" in docker_compose_path.stdout'
+  when: ( docker_compose_path is defined ) and ( "docker-compose" in docker_compose_path.stdout )
   tags:
     - docker-compose
 
