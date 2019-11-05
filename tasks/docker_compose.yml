@@ -29,40 +29,51 @@
   tags:
     - docker-compose
 
-- name: Docker Compose Version
-  shell: docker-compose -v | awk '{ print $3 }' | sed 's/,$//'
-  check_mode: false
-  register: docker_compose_installed
-  when: ( docker_compose_path is defined ) and ( "docker-compose" in docker_compose_path.stdout )
-  tags:
-    - docker-compose
+- name: When Docker Compose is installed
+  block:
 
-- name: Check what the latest version of Docker Compose
-  uri:
-    url: https://github.com/docker/compose/releases/latest
-    method: HEAD
-    status_code: 302
-    follow_redirects: none
-  check_mode: false
-  register: docker_compose_headers
-  tags:
-    - docker-compose
+    - name: Docker Compose Version
+      shell: docker-compose -v | awk '{ print $3 }' | sed 's/,$//'
+      check_mode: false
+      register: docker_compose_installed
+      tags:
+        - docker-compose
 
-- name: Debug Docker Compose latest headers
-  debug:
-    msg:
-      - "Location: {{ docker_compose_headers.location }}"
-      - "Path: {{ docker_compose_headers.location | urlsplit('path') }}"
-      - "Version: {{ docker_compose_headers.location | urlsplit('path') | basename }}"
-    verbosity: 1
-  tags:
-    - docker-compose
+    - name: Check what the latest version of Docker Compose
+      uri:
+        url: https://github.com/docker/compose/releases/latest
+        method: HEAD
+        status_code: 302
+        follow_redirects: none
+      check_mode: false
+      register: docker_compose_headers
+      tags:
+        - docker-compose
 
-- name: Set a fact for the latest version of Docker Compose
-  set_fact:
-    docker_compose_version: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
-  tags:
-    - docker-compose
+    - name: Debug Docker Compose latest headers
+      debug:
+        msg:
+          - "Location: {{ docker_compose_headers.location }}"
+          - "Path: {{ docker_compose_headers.location | urlsplit('path') }}"
+          - "Version: {{ docker_compose_headers.location | urlsplit('path') | basename }}"
+        verbosity: 1
+      tags:
+        - docker-compose
+
+    - name: Set a fact for the latest version of Docker Compose
+      set_fact:
+        docker_compose_version: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
+      tags:
+        - docker-compose
+
+    - name: Set a fact if a newer version is available
+      set_fact:
+        docker_compose_upgrade: true
+      when: docker_compose_installed.stdout not in docker_compose_headers.location | urlsplit('path') | basename
+      tags:
+        - docker-compose
+
+  when: ( docker_compose_path is defined ) and ( "docker-compose" in docker_compose_path.stdout ) 
 
 - name: Install or upgrade Docker Compose
   block:
@@ -181,5 +192,5 @@
       tags:
         - docker-compose
 
-  when: ( docker_compose_installed is not defined ) or ( docker_compose_installed.stdout not in docker_compose_version )
+  when: ( "NOTFOUND" in docker_compose_path.stdout ) or ( docker_compose_upgrade is defined and docker_compose_upgrade == True )
 ...
