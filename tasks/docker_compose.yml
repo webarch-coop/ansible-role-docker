@@ -181,5 +181,5 @@
       tags:
         - docker-compose
 
-  when: docker_compose_installed.stdout not in docker_compose_version
+  when: ( docker_compose_installed is not defined ) or ( docker_compose_installed.stdout not in docker_compose_version )
 ...
