@@ -14,21 +14,6 @@
   tags:
     - docker
 
-- name: Check the distro version using lsb_release
-  shell: "lsb_release -c | awk '{ print $2 }'"
-  register: docker_distro_check
-  changed_when: false
-  check_mode: false
-  tags:
-    - docker
-
-- name: Set docker_distro if not defined
-  set_fact:
-    docker_distro: "{{ docker_distro_check.stdout }}"
-  when: docker_distro is not defined
-  tags:
-    - docker
-
 # https://docs.docker.com/engine/installation/linux/debian/
 - name: Docker GPG key present
   apt_key:
@@ -40,7 +25,7 @@
 
 - name: Docker APT repo available
   apt_repository:
-    repo: "deb https://download.docker.com/linux/debian {{ docker_distro }} stable"
+    repo: "deb https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
     filename: "docker"
     state: present
   tags:

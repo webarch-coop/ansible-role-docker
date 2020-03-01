@@ -68,10 +68,10 @@
     - docker
     - munin
 
-- name: Distro set to {{ docker_distro }} in munin apt_all plugin
+- name: "Distro set to {{ ansible_distribution_release }} in munin apt_all plugin"
   lineinfile:
     state: present
-    line: "my @releases = ('{{ docker_distro }}');"
+    line: "my @releases = ('{{ ansible_distribution_release }}');"
     regexp: "^my @releases"
     dest: "/usr/share/munin/plugins/apt_all"
   tags:

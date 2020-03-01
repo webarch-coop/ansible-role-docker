@@ -6,21 +6,6 @@
   tags:
     - docker-compose
 
-- name: Check the distro version using lsb_release
-  command: "lsb_release -c"
-  register: docker_distro_check
-  changed_when: false
-  check_mode: false
-  tags:
-    - docker-compose
-
-- name: Set docker_distro if not defined
-  set_fact:
-    docker_distro: "{{ docker_distro_check.stdout | replace('Codename:', '') | trim }}"
-  when: docker_distro is not defined
-  tags:
-    - docker-compose
-
 - name: Which Docker Compose
   shell: which docker-compose || echo NOTFOUND
   check_mode: false
