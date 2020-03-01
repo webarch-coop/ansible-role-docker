@@ -73,7 +73,7 @@
       tags:
         - docker-compose
 
-  when: ( docker_compose_path is defined ) and ( "docker-compose" in docker_compose_path.stdout ) 
+  when: ( docker_compose_path is defined ) and ( "docker-compose" in docker_compose_path.stdout )
 
 - name: Install or upgrade Docker Compose
   block:
