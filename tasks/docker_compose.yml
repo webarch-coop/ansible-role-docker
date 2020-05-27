@@ -6,6 +6,33 @@
   tags:
     - docker-compose
 
+- name: Check what the latest version of Docker Compose
+  uri:
+    url: https://github.com/docker/compose/releases/latest
+    method: HEAD
+    status_code: 302
+    follow_redirects: none
+  check_mode: false
+  register: docker_compose_headers
+  tags:
+    - docker-compose
+
+- name: Debug Docker Compose latest headers
+  debug:
+    msg:
+      - "Location: {{ docker_compose_headers.location }}"
+      - "Path: {{ docker_compose_headers.location | urlsplit('path') }}"
+      - "Version: {{ docker_compose_headers.location | urlsplit('path') | basename }}"
+    verbosity: 1
+  tags:
+    - docker-compose
+
+- name: Set a fact for the latest version of Docker Compose
+  set_fact:
+    docker_compose_version: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
+  tags:
+    - docker-compose
+
 - name: Which Docker Compose
   shell: which docker-compose || echo NOTFOUND
   check_mode: false
@@ -21,33 +48,6 @@
       shell: docker-compose -v | awk '{ print $3 }' | sed 's/,$//'
       check_mode: false
       register: docker_compose_installed
-      tags:
-        - docker-compose
-
-    - name: Check what the latest version of Docker Compose
-      uri:
-        url: https://github.com/docker/compose/releases/latest
-        method: HEAD
-        status_code: 302
-        follow_redirects: none
-      check_mode: false
-      register: docker_compose_headers
-      tags:
-        - docker-compose
-
-    - name: Debug Docker Compose latest headers
-      debug:
-        msg:
-          - "Location: {{ docker_compose_headers.location }}"
-          - "Path: {{ docker_compose_headers.location | urlsplit('path') }}"
-          - "Version: {{ docker_compose_headers.location | urlsplit('path') | basename }}"
-        verbosity: 1
-      tags:
-        - docker-compose
-
-    - name: Set a fact for the latest version of Docker Compose
-      set_fact:
-        docker_compose_version: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
       tags:
         - docker-compose
 
