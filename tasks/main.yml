@@ -15,18 +15,29 @@
   tags:
     - docker
 
-# https://docs.docker.com/engine/installation/linux/debian/
-- name: Docker GPG key present
+# https://docs.docker.com/engine/install/debian/
+- name: Debian docker GPG key present
   apt_key:
     id: 0EBFCD88
     url: https://download.docker.com/linux/debian/gpg
     state: present
+  when: ansible_distribution == "Debian"
+  tags:
+    - docker
+
+# https://docs.docker.com/engine/install/ubuntu/
+- name: Ubuntu docker GPG key present
+  apt_key:
+    id: 0EBFCD88
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  when: ansible_distribution == "Ubuntu"
   tags:
     - docker
 
 - name: Docker APT repo available
   apt_repository:
-    repo: "deb https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+    repo: "deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
     filename: "docker"
     state: present
   tags:
