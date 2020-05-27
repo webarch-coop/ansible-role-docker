@@ -64,7 +64,7 @@
 
 - name: Optionally include the Docker Compose tasks
   include_tasks: docker_compose.yml
-  when: ( docker_compose_version is defined ) and ( docker_compose_version != '' ) and ( docker_compose_version != None )
+  when: ( docker_compose_version is defined ) and ( docker_compose_version )
   tags:
     - docker-compose
     - docker
