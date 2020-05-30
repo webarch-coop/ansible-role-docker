@@ -9,6 +9,7 @@
       - git
       - lsb-release
       - python-docker
+      - python3-docker
       - software-properties-common
     state: present
     update_cache: false
