@@ -169,7 +169,8 @@
 
     - name: Docker Compose Bash completion in place
       get_url:
-        url: "https://raw.githubusercontent.com/docker/compose/{{ docker_compose_version }}/contrib/completion/bash/docker-compose"
+        # url: "https://raw.githubusercontent.com/docker/compose/{{ docker_compose_version }}/contrib/completion/bash/docker-compose"
+        url: https://raw.githubusercontent.com/docker/compose/84afa518e8144c9620562c023c0b62dd7c0b4305/contrib/completion/bash/docker-compose
         dest: /etc/bash_completion.d/docker-compose
         force: true
         backup: true
