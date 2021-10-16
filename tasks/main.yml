@@ -8,11 +8,20 @@
       - gnupg-agent
       - git
       - lsb-release
-      - python-docker
       - python3-docker
       - software-properties-common
     state: present
     update_cache: false
+  tags:
+    - docker
+
+- name: Git and APT HTTPS packages installed
+  apt:
+    pkg:
+      - python-docker
+    state: present
+    update_cache: false
+  when: ansible_distribution_release is regex('stretch|buster')
   tags:
     - docker
 
