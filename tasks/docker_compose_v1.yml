@@ -18,7 +18,7 @@
 
         - name: Set a fact for Version 1 of Docker Compose that is installed
           ansible.builtin.set_fact:
-            docker_compose_v1_installed: "{{ docker_compose_v1_version.stdout | split(' ')[2] | regex_replace(',$') }}"
+            docker_compose_v1_installed: "{{ docker_compose_v1_version.stdout.split(' ')[2] | regex_replace(',$') }}"
 
         - name: Set a fact if a newer version of Docker Compose Version 1 is specified
           ansible.builtin.set_fact:
