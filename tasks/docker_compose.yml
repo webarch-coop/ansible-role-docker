@@ -73,7 +73,7 @@
         - name: Docker CLI plugins directory present
           ansible.builtin.file:
             path: /usr/local/lib/docker/cli-plugins
-            state: present
+            state: directory
             owner: root
             group: root
             mode: 0755
