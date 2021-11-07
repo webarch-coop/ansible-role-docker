@@ -158,14 +158,14 @@
         - name: Set docker-compose-v1 alternative for docker-compose
           community.general.alternatives:
             name: docker-compose
-            link: docker-compose
+            link: /usr/local/bin/docker-compose
             path: /usr/local/bin/docker-compose-v1
             priority: 1
 
         - name: Set compose-switch alternative for docker-compose
           community.general.alternatives:
             name: docker-compose
-            link: docker-compose
+            link: /usr/local/bin/docker-compose
             path: /usr/local/bin/compose-switch
             priority: 99
 
