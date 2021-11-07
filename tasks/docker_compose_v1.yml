@@ -64,7 +64,7 @@
 
         - name: Docker Compose Version 1 present
           ansible.builtin.get_url:
-            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_v1 }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
             dest: /usr/local/bin/docker-compose-v1
             force: true
             owner: root
