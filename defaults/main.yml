@@ -1,7 +1,8 @@
 ---
-docker_nameservers:
-  - 81.95.52.30
-  - 81.95.52.27
 docker_compose: true
-docker_munin_node_install: false
+# https://github.com/docker/compose/releases
+docker_compose_v1:  1.29.2
+docker_nameservers:
+  - 1.1.1.1
+  - 1.1.2.2
 ...

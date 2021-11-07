@@ -1,100 +1,16 @@
 ---
-- name: Git and APT HTTPS packages installed
-  apt:
-    pkg:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gnupg-agent
-      - git
-      - lsb-release
-      - python3-docker
-      - software-properties-common
-    state: present
-    update_cache: false
-  tags:
-    - docker
+- name: Install Docker and optionally Docker Compose
+  block:
 
-- name: Git and APT HTTPS packages installed
-  apt:
-    pkg:
-      - python-docker
-    state: present
-    update_cache: false
-  when: ansible_distribution_release is regex('stretch|buster')
-  tags:
-    - docker
+    - name: Install Docker
+      include_tasks: docker.yml
 
-# https://docs.docker.com/engine/install/debian/
-- name: Debian docker GPG key present
-  apt_key:
-    id: 0EBFCD88
-    url: https://download.docker.com/linux/debian/gpg
-    state: present
-  when: ansible_distribution == "Debian"
-  tags:
-    - docker
+    - name: Install Docker Compose
+      include_tasks: docker_compose.yml
+      when: ( docker_compose is defined ) and ( docker_compose )
+      tags:
+        - docker-compose
 
-# https://docs.docker.com/engine/install/ubuntu/
-- name: Ubuntu docker GPG key present
-  apt_key:
-    id: 0EBFCD88
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-  when: ansible_distribution == "Ubuntu"
   tags:
     - docker
-
-- name: Docker APT repo available
-  apt_repository:
-    repo: "deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
-    filename: "docker"
-    state: present
-  tags:
-    - docker
-
-- name: Docker CE installed
-  apt:
-    pkg:
-      - docker-ce
-    state: present
-    update_cache: true
-  tags:
-    - docker
-
-- name: /etc/docker present
-  file:
-    path: /etc/docker
-    state: directory
-  tags:
-    - docker
-
-- name: Docker DNS servers configured
-  template:
-    src: templates/daemon.json.j2
-    dest: /etc/docker/daemon.json
-  when: ( docker_nameservers is defined ) and ( docker_nameservers != [] )
-  tags:
-    - docker
-
-- name: Docker started
-  service:
-    name: docker
-    state: started
-  tags:
-    - docker
-
-- name: Optionally include the Docker Compose tasks
-  include_tasks: docker_compose.yml
-  when: ( docker_compose is defined ) and ( docker_compose )
-  tags:
-    - docker-compose
-    - docker
-
-- name: Optionally include the Munin Node tasks
-  include_tasks: munin_node.yml
-  when: ( docker_munin_node_install is defined ) and ( docker_munin_node_install == True )
-  tags:
-    - docker
-    - munin
 ...

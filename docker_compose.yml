@@ -1,8 +1,0 @@
----
-- name: Install or Upgrade Docker Compose
-  hosts: "{{ hostname }}"
-  become: true
-
-  roles:
-    - docker-compose
-...

@@ -1,4 +1,6 @@
 {
+{% if docker_nameservers is defined and docker_nameservers != [] %}
     "dns": [{% for ns in docker_nameservers %}"{{ ns }}"{{ ", " if not loop.last else "" }}{% endfor %}],
+{% endif %}
     "storage-driver": "overlay2"
 }

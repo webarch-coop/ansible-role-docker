@@ -1,182 +1,96 @@
 ---
-- name: lsb-release present
-  apt:
-    pkg: lsb-release
-    state: present
-  tags:
-    - docker-compose
-
-- name: Check what the latest version of Docker Compose
-  uri:
-    url: https://github.com/docker/compose/releases/latest
-    method: HEAD
-    status_code: 302
-    follow_redirects: none
-  check_mode: false
-  register: docker_compose_headers
-  tags:
-    - docker-compose
-
-- name: Debug Docker Compose latest headers
-  debug:
-    msg:
-      - "Location: {{ docker_compose_headers.location }}"
-      - "Path: {{ docker_compose_headers.location | urlsplit('path') }}"
-      - "Version: {{ docker_compose_headers.location | urlsplit('path') | basename }}"
-    verbosity: 1
-  tags:
-    - docker-compose
-
-- name: Set a fact for the latest version of Docker Compose
-  set_fact:
-    docker_compose_version: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
-  tags:
-    - docker-compose
-
-- name: Which Docker Compose
-  shell: which docker-compose || echo NOTFOUND
-  check_mode: false
-  register: docker_compose_path
-  changed_when: '"NOTFOUND" in docker_compose_path.stdout'
-  tags:
-    - docker-compose
-
-- name: When Docker Compose is installed
+- name: Install Docker Compose
   block:
 
-    - name: Docker Compose Version
-      shell: docker-compose -v | awk '{ print $3 }' | sed 's/,$//'
+    - name: Include Docker Compose Version 1 tasks
+      include_tasks: docker_compose_v1.yml
+      when: docker_compose_v1 is defined
+
+    - name: Check the latest version of Docker Compose
+      ansible.builtin.uri:
+        url: https://github.com/docker/compose/releases/latest
+        method: HEAD
+        status_code: 302
+        follow_redirects: none
       check_mode: false
-      register: docker_compose_installed
-      tags:
-        - docker-compose
+      register: docker_compose_headers
 
-    - name: Set a fact if a newer version is available
-      set_fact:
-        docker_compose_upgrade: true
-      when: docker_compose_installed.stdout not in docker_compose_headers.location | urlsplit('path') | basename
-      tags:
-        - docker-compose
-
-  when: ( docker_compose_path is defined ) and ( "docker-compose" in docker_compose_path.stdout )
-
-- name: Install or upgrade Docker Compose
-  block:
-
-    # https://docs.docker.com/compose/install/
-    - name: Get the kernel name
-      command: uname -s
-      check_mode: false
-      register: kernel_name
-      tags:
-        - docker-compose
-
-    - name: Get the machine hardware
-      command: uname -m
-      check_mode: false
-      register: machine_hardware
-      tags:
-        - docker-compose
-
-    - debug:
+    - name: Debug Docker Compose latest headers
+      ansible.builtin.debug:
         msg:
-          - "Kernel name: {{ kernel_name.stdout }}"
-          - "Machine hardware: {{ machine_hardware.stdout }}"
-        verbosity: 1
-      tags:
-        - docker-compose
+          - "Location: {{ docker_compose_headers.location }}"
+          - "Path: {{ docker_compose_headers.location | urlsplit('path') }}"
+          - "Version: {{ docker_compose_headers.location | urlsplit('path') | basename }}"
+        verbosity: 2
 
-    - debug:
-        msg: "About to fetch https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }} and https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
-        verbosity: 1
-      tags:
-        - docker-compose
+    - name: Set a fact for the latest version of Docker Compose
+      ansible.builtin.set_fact:
+        docker_compose_version: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
 
-    - name: Temporary download directory
-      tempfile:
-        state: directory
-        suffix: docker-compose
-      register: download_dir
-      tags:
-        - docker-compose
+    - name: Stat /usr/local/lib/docker/cli-plugins/docker-compose
+      ansible.builtin.stat:
+        path: /usr/local/lib/docker/cli-plugins/docker-compose
+      register: docker_compose_path
 
-    - debug:
-        msg: "Temp download path: {{ download_dir.path }}"
-        verbosity: 1
-      tags:
-        - docker-compose
+    # TODO Add check to see what version of /usr/local/lib/docker/cli-plugins/docker-compose is installed
+    #      and upgrade it if it isn't the latest
 
-    - name: Docker Compose version {{ docker_compose_version }} checksum downloaded
-      get_url:
-        url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
-        dest: "{{ download_dir.path }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
-      tags:
-        - docker-compose
+    - name: Docker Compose present
+      block:
 
-    - name: Slurp a base64 encoded version of the sha256 checksum
-      slurp:
-        src: "{{ download_dir.path }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}.sha256"
-      register: docker_compose_sha256_b64encoded
-      tags:
-        - docker-compose
+        - name: Gather Ansible hardware facts
+          ansible.builtin.setup:
+            gather_subset:
+              - hardware
 
-    - name: Decode the base64 encoded version of the sha256 checksum
-      set_fact:
-        docker_compose_sha256_file: "sha256:{{ docker_compose_sha256_b64encoded['content'] | b64decode }}"
-      tags:
-        - docker-compose
+        - name: Temporary download directory registered
+          ansible.builtin.tempfile:
+            state: directory
+            suffix: docker-compose
+          register: docker_compose_download_dir
 
-    - debug:
-        msg: "Full string from the sha256 file: {{ docker_compose_sha256_file }}"
-        verbosity: 1
-      tags:
-        - docker-compose
+        - name: Docker Compose checksum present
+          ansible.builtin.get_url:
+            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}.sha256"
+            dest: "{{ docker_compose_download_dir.path }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}.sha256"
+            owner: root
+            group: root
+            mode: 0644
 
-    - name: Split the string in the file on spaces, save the first value
-      set_fact:
-        docker_compose_sha256: "{{ docker_compose_sha256_file.split(' ')[0] }}"
-      tags:
-        - docker-compose
+        - name: Docker Compose base64 encoded version sha256 checksum slurped
+          ansible.builtin.slurp:
+            src: "{{ docker_compose_download_dir.path.path }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}.sha256"
+          register: docker_compose_sha256_b64encoded
 
-    - debug:
-        msg: "First value from the sha256 file: {{ docker_compose_sha256 }}"
-        verbosity: 1
-      tags:
-        - docker-compose
+        - name: Docker Compose base64 encoded version of the sha256 checksum decoded
+          ansible.builtin.set_fact:
+            docker_compose_sha256_file: "sha256:{{ docker_compose_sha256_b64encoded['content'] | b64decode }}"
 
-    - name: Docker Compose version {{ docker_compose_version }} downloaded and installed
-      get_url:
-        url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name.stdout }}-{{ machine_hardware.stdout }}"
-        dest: /usr/local/bin/docker-compose
-        force: true
-        mode: 0755
-        checksum: "{{ docker_compose_sha256 }}"
-      tags:
-        - docker-compose
+        - name: Docker Compose sha256 checksum string first value following split on spaces
+          ansible.builtin.set_fact:
+            docker_compose_sha256: "{{ docker_compose_sha256_file.split(' ')[0] }}"
 
-    - name: Check the version
-      command: docker-compose --version
-      register: docker_compose_version_installed
-      check_mode: false
-      tags:
-        - docker-compose
+        - name: Docker CLI plugins directory present
+          ansible.builtin.file:
+            path: /usr/local/lib/docker/cli-plugins
+            state: present
+            owner: root
+            group: root
+            mode: 0755
 
-    - debug:
-        msg: "The Docker Compose version installed is now: {{ docker_compose_version_installed.stdout }}"
-        verbosity: 1
-      tags:
-        - docker-compose
+        - name: Docker Compose present
+          ansible.builtin.get_url:
+            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
+            dest: /usr/local/lib/docker/cli-plugins/docker-compose
+            force: true
+            owner: root
+            group: root
+            mode: 0755
+            checksum: "{{ docker_compose_sha256 }}"
 
-    - name: Docker Compose Bash completion in place
-      get_url:
-        # url: "https://raw.githubusercontent.com/docker/compose/{{ docker_compose_version }}/contrib/completion/bash/docker-compose"
-        url: https://raw.githubusercontent.com/docker/compose/84afa518e8144c9620562c023c0b62dd7c0b4305/contrib/completion/bash/docker-compose
-        dest: /etc/bash_completion.d/docker-compose
-        force: true
-        backup: true
-        mode: 0644
-      tags:
-        - docker-compose
+      when: not docker_compose_path.stat.exists  
 
-  when: ( "NOTFOUND" in docker_compose_path.stdout ) or ( docker_compose_upgrade is defined and docker_compose_upgrade == True )
+  tags:
+    - docker
+    - docker_compose
 ...

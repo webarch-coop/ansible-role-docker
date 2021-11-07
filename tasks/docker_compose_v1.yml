@@ -1,0 +1,182 @@
+---
+- name: Install Docker Compose v1
+  block:
+
+    - name: Which Docker Compose Version 1
+      ansible.builtin.command: which docker-compose-v1
+      check_mode: false
+      register: docker_compose_v1_path
+      failed_when: docker_compose_v1_path.rc is not regex('^0|1$')
+
+    - name: When Docker Compose Version 1 is installed
+      block:
+
+        - name: Docker Compose Version 1 version
+          ansible.builtin.command: docker-compose-v1 -v --no-ansi
+          check_mode: false
+          register: docker_compose_v1_version
+
+        - name: Set a fact for Version 1 of Docker Compose that is installed
+          ansible.builtin.set_fact:
+            docker_compose_v1_installed: "{{ docker_compose_v1_version.stdout | split(' ')[2] | regex_replace(',$') }}"
+
+        - name: Set a fact if a newer version of Docker Compose Version 1 is specified
+          ansible.builtin.set_fact:
+            docker_compose_v1_upgrade: true
+          when: docker_compose_v1_installed is version(docker_compose_v1, '<')
+
+      when: ( docker_compose_v1_path is defined ) and ( "docker-compose" in docker_compose_v1_path.stdout )
+
+    - name: Install or upgrade Docker Compose Version 1
+      block:
+
+        - name: Gather Ansible hardware facts
+          ansible.builtin.setup:
+            gather_subset:
+              - hardware
+
+        - name: Temporary download directory registered
+          ansible.builtin.tempfile:
+            state: directory
+            suffix: docker-compose
+          register: docker_compose_v1_download_dir
+
+        - name: Docker Compose Version 1 checksum present
+          ansible.builtin.get_url:
+            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_v1 }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}.sha256"
+            dest: "{{ docker_compose_v1_download_dir.path }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}.sha256"
+            owner: root
+            group: root
+            mode: 0644
+
+        - name: Docker Compose Version 1 base64 encoded version sha256 checksum slurped
+          ansible.builtin.slurp:
+            src: "{{ docker_compose_v1_download_dir.path.path }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}.sha256"
+          register: docker_compose_v1_sha256_b64encoded
+
+        - name: Docker Compose Version 1 base64 encoded version of the sha256 checksum decoded
+          ansible.builtin.set_fact:
+            docker_compose_v1_sha256_file: "sha256:{{ docker_compose_v1_sha256_b64encoded['content'] | b64decode }}"
+
+        - name: Docker Compose Version 1 sha256 checksum string first value following split on spaces
+          ansible.builtin.set_fact:
+            docker_compose_v1_sha256: "{{ docker_compose_v1_sha256_file.split(' ')[0] }}"
+
+        - name: Docker Compose Version 1 present
+          ansible.builtin.get_url:
+            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+            dest: /usr/local/bin/docker-compose-v1
+            force: true
+            owner: root
+            group: root
+            mode: 0755
+            checksum: "{{ docker_compose_v1_sha256 }}"
+
+        - name: Docker Compose Version 1 checked
+          ansible.builtin.command: docker-compose-v1 -v --no-ansi
+          check_mode: false
+
+        - name: Docker Compose Version 1 Bash completion in place
+          ansible.builtin.get_url:
+            url: "https://raw.githubusercontent.com/docker/compose/{{ docker_compose_v1 }}/contrib/completion/bash/docker-compose"
+            dest: /etc/bash_completion.d/docker-compose
+            force: true
+            owner: root
+            group: root
+            mode: 0644
+
+      when: ( docker_compose_v1_path.rc == 1 ) or ( docker_compose_v1_upgrade is defined and docker_compose_v1_upgrade )
+
+    - name: Check the latest version of Docker Compose Switch
+      ansible.builtin.uri:
+        url: https://github.com/docker/compose-switch/releases/latest
+        method: HEAD
+        status_code: 302
+        follow_redirects: none
+      check_mode: false
+      register: docker_compose_switch_headers
+
+    - name: Debug Docker Compose Switch latest headers
+      ansible.builtin.debug:
+        msg:
+          - "Location: {{ docker_compose_switch_headers.location }}"
+          - "Path: {{ docker_compose_switch_headers.location | urlsplit('path') }}"
+          - "Version: {{ docker_compose_switch_headers.location | urlsplit('path') | basename }}"
+        verbosity: 2
+
+    - name: Set a fact for the latest version of Docker Compose Switch
+      ansible.builtin.set_fact:
+        docker_compose_switch_latest: "{{ docker_compose_switch_headers.location | urlsplit('path') | basename }}"
+
+    - name: Which Docker Compose Switch
+      ansible.builtin.command: which compose-switch
+      check_mode: false
+      register: docker_compose_switch_path
+      failed_when: docker_compose_switch_path.rc is not regex('^0|1$')
+
+    - name: When Docker Compose Switch is installed
+      block:
+
+        - name: Docker Compose Switch version
+          ansible.builtin.command: compose-switch -v --no-ansi
+          check_mode: false
+          register: docker_compose_switch_version
+
+        - name: Set a fact for Switch of Docker Compose that is installed
+          ansible.builtin.set_fact:
+            docker_compose_switch_installed: "{{ docker_compose_switch_version.stdout | split(' ')[2] | regex_replace(',$') }}"
+
+        - name: Set a fact if a newer version of Docker Compose Switch is available
+          ansible.builtin.set_fact:
+            docker_compose_switch_upgrade: true
+          when: docker_compose_switch_installed is version(docker_compose_switch_version, '<')
+
+      when: ( docker_compose_switch_path is defined ) and ( "compose-switch" in docker_compose_switch_path.stdout )
+
+    - name: Install or upgrade Docker Compose Switch
+      block:
+
+        - name: Get the dpkg architecture
+          ansible.builtin.command: dpkg --print-architecture
+          check_mode: false
+          register: docker_compose_architecture
+
+        - name: Docker Compose Switch present
+          ansible.builtin.get_url:
+            url: "https://github.com/docker/compose-switch/releases/download/{{ docker_compose_switch_latest }}/docker-compose-linux-{{ docker_compose_architecture.stdout }}"
+            dest: /usr/local/bin/compose-switch
+            force: true
+            owner: root
+            group: root
+            mode: 0755
+
+        - name: Legacy Docker Compose absent
+          ansible.builtin.file:
+            path: /usr/local/bin/docker-compose
+            state: absent
+
+        - name: Set docker-compose-v1 alternative for docker-compose
+          community.general.alternatives:
+            name: docker-compose
+            link: docker-compose
+            path: /usr/local/bin/docker-compose-v1
+            priority: 1
+
+        - name: Set compose-switch alternative for docker-compose
+          community.general.alternatives:
+            name: docker-compose
+            link: docker-compose
+            path: /usr/local/bin/compose-switch
+            priority: 99
+
+      when: ( docker_compose_switch_path.rc == 1 ) or ( docker_compose_switch_upgrade is defined and docker_compose_switch_upgrade )
+
+      - name: Check docker-compose
+        community.general.command: update-alternatives --display docker-compose
+        check_mode: false
+
+  when: docker_compose_v1 is defined
+  tags:
+    - docker
+    - docker_compose
+...

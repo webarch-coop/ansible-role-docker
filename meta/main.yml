@@ -2,6 +2,7 @@
 galaxy_info:
   role_name: docker
   author: Chris Croome
+  namespace: chriscroome
   description: Ansible role for installing Docker and Docker Compose
   company: Webarchitects Co-operative
   license: license (GPLv3)
@@ -9,10 +10,12 @@ galaxy_info:
   platforms:
     - name: debian
       versions:
+        - bullseye
         - buster
         - stretch
     - name: ubuntu
       versions:
+        - focal
         - bionic
         - xenial
   galaxy_tags: []
