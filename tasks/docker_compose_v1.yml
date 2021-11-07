@@ -118,31 +118,6 @@
       register: docker_compose_switch_path
       failed_when: docker_compose_switch_path.rc is not regex('^0|1$')
 
-    - name: When Docker Compose Switch is installed
-      block:
-
-        - name: Docker Compose Switch version
-          ansible.builtin.command: compose-switch -v
-          check_mode: false
-          changed_when: false
-          register: docker_compose_switch_version
-          failed_when: docker_compose_switch_version.rc is not regex('^0|1$')
-
-        - name: Set a fact for Switch of Docker Compose that is installed
-          ansible.builtin.set_fact:
-            docker_compose_switch_installed: "{{ docker_compose_switch_version.stdout | split(' ')[2] | regex_replace(',$') }}"
-          when: docker_compose_switch_version.rc == 0
-
-        - name: Set a fact if a newer version of Docker Compose Switch is available
-          ansible.builtin.set_fact:
-            docker_compose_switch_upgrade: true
-          when: >
-            ( docker_compose_switch_version.rc == 1 ) or
-            ( docker_compose_switch_installed is not defined ) or
-            ( docker_compose_switch_installed is defined and docker_compose_switch_installed is version(docker_compose_switch_version, '<') )
-
-      when: ( docker_compose_switch_path is defined ) and ( "compose-switch" in docker_compose_switch_path.stdout )
-
     - name: Install or upgrade Docker Compose Switch
       block:
 
