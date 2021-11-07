@@ -13,6 +13,7 @@
         status_code: 302
         follow_redirects: none
       check_mode: false
+      changed_when: false
       register: docker_compose_headers
 
     - name: Debug Docker Compose latest headers

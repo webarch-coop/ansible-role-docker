@@ -5,6 +5,7 @@
     - name: Which Docker Compose Version 1
       ansible.builtin.command: which docker-compose-v1
       check_mode: false
+      changed_when: false
       register: docker_compose_v1_path
       failed_when: docker_compose_v1_path.rc is not regex('^0|1$')
 
@@ -14,6 +15,7 @@
         - name: Docker Compose Version 1 version
           ansible.builtin.command: docker-compose-v1 -v --no-ansi
           check_mode: false
+          changed_when: false
           register: docker_compose_v1_version
 
         - name: Set a fact for Version 1 of Docker Compose that is installed
@@ -94,6 +96,7 @@
         status_code: 302
         follow_redirects: none
       check_mode: false
+      changed_when: false
       register: docker_compose_switch_headers
 
     - name: Debug Docker Compose Switch latest headers
@@ -111,6 +114,7 @@
     - name: Which Docker Compose Switch
       ansible.builtin.command: which compose-switch
       check_mode: false
+      changed_when: false
       register: docker_compose_switch_path
       failed_when: docker_compose_switch_path.rc is not regex('^0|1$')
 
@@ -120,6 +124,7 @@
         - name: Docker Compose Switch version
           ansible.builtin.command: compose-switch -v
           check_mode: false
+          changed_when: false
           register: docker_compose_switch_version
           failed_when: docker_compose_switch_version.rc is not regex('^0|1$')
 
@@ -144,6 +149,7 @@
         - name: Get the dpkg architecture
           ansible.builtin.command: dpkg --print-architecture
           check_mode: false
+          changed_when: false
           register: docker_compose_architecture
 
         - name: Docker Compose Switch present
@@ -179,6 +185,7 @@
     - name: Check docker-compose
       ansible.builtin.command: update-alternatives --display docker-compose
       check_mode: false
+      changed_when: false
 
   when: docker_compose_v1 is defined
   tags:
