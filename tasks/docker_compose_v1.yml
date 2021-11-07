@@ -51,7 +51,7 @@
 
         - name: Docker Compose Version 1 base64 encoded version sha256 checksum slurped
           ansible.builtin.slurp:
-            src: "{{ docker_compose_v1_download_dir.path.path }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}.sha256"
+            src: "{{ docker_compose_v1_download_dir.path }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}.sha256"
           register: docker_compose_v1_sha256_b64encoded
 
         - name: Docker Compose Version 1 base64 encoded version of the sha256 checksum decoded
