@@ -88,7 +88,7 @@
             mode: 0755
             checksum: "{{ docker_compose_sha256 }}"
 
-      when: not docker_compose_path.stat.exists  
+      when: not docker_compose_path.stat.exists
 
   tags:
     - docker

@@ -1,7 +1,7 @@
 ---
 docker_compose: true
 # https://github.com/docker/compose/releases
-docker_compose_v1:  1.29.2
+docker_compose_v1: 1.29.2
 docker_nameservers:
   - 1.1.1.1
   - 1.1.2.2

@@ -38,7 +38,7 @@
         url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
         state: present
 
-    - name: Docker apt repo available 
+    - name: Docker apt repo available
       ansible.builtin.apt_repository:
         repo: "deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
         filename: "docker"
@@ -77,5 +77,5 @@
         state: started
 
   tags:
-    - docker 
+    - docker
 ...
