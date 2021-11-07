@@ -172,7 +172,7 @@
       when: ( docker_compose_switch_path.rc == 1 ) or ( docker_compose_switch_upgrade is defined and docker_compose_switch_upgrade )
 
     - name: Check docker-compose
-      community.general.command: update-alternatives --display docker-compose
+      ansible.builtin.command: update-alternatives --display docker-compose
       check_mode: false
 
   when: docker_compose_v1 is defined
