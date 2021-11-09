@@ -139,6 +139,10 @@
 
         - name: Debug expected sha256sum
           debug:
+            var: "docker_compose_switch_{{ docker_compose_switch_latest }}_{{ docker_compose_architecture.stdout }}_sha256"
+
+        - name: Debug expected sha256sum
+          debug:
             var: "docker_compose_switch_versions.{{ docker_compose_switch_latest }}.{{ docker_compose_architecture.stdout }}.sha256"
 
       when: docker_compose_switch_path.rc == 0

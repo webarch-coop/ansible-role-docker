@@ -1,10 +1,6 @@
 ---
 # There are no checksums for compose-switch, see
 # https://github.com/docker/compose-switch/issues/11
-docker_compose_switch_versions:
-  v1.0.2:
-    amd64:
-      sha256: 71bece7c8a0439523ee77fd3b37f6d17fb24f9d368edc69b6cb02675698984b7
-    arm64:
-       sha256: 415f681dd525639a3d42557ad29f976fa19d48e35f62828f0fd93900ff7babca
+docker_compose_switch_v1.0.2_amd64_sha256: 71bece7c8a0439523ee77fd3b37f6d17fb24f9d368edc69b6cb02675698984b7
+docker_compose_switch_v1.0.2_arm64_sha256: 415f681dd525639a3d42557ad29f976fa19d48e35f62828f0fd93900ff7babca
 ...
