@@ -20,9 +20,12 @@
           - "Version: {{ docker_compose_headers.location | urlsplit('path') | basename }}"
         verbosity: 2
 
-    - name: Set a fact for the latest and proposed versions of Docker Compose
+    - name: Set a fact for the latest version of Docker Compose
       ansible.builtin.set_fact:
         docker_compose_version_latest: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
+
+    - name: Set a fact for the proposed version of Docker Compose
+      ansible.builtin.set_fact:
         docker_compose_version_proposed: "{% if docker_compose_version == 'latest' %}{{ docker_compose_version_latest }}{% else %}{{ docker_compose_version }}"
 
     - name: Stat /usr/local/lib/docker/cli-plugins/docker-compose
