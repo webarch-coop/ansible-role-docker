@@ -127,11 +127,10 @@
     - name: Check the sha625sum of compose-switch
       block:
 
-        - name: Generate a sha256sum of the compose-switch that is installed
+        - name: Stat the compose-switch that is installed
           ansible.builtin.stat:
             path: "{{ docker_compose_switch_path.stdout }}"
             checksum_algorithm: sha256
-            check_mode: false
           register: docker_compose_switch_installed
 
         - name: Debug sha256 of the compose-switch that is installed
