@@ -137,6 +137,10 @@
       set_fact:
         docker_compose_switch_proposed_sha256: "{{ docker_compose_switch_proposed }}"
 
+    - name: Debug sha256 of the compose-switch that is proposed
+      debug:
+        var: docker_compose_switch_proposed_sha256
+
     - name: Check the sha625sum of compose-switch
       block:
 
