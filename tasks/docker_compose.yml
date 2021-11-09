@@ -26,7 +26,7 @@
 
     - name: Set a fact for the proposed version of Docker Compose
       ansible.builtin.set_fact:
-        docker_compose_version_proposed: "{% if docker_compose_version == 'latest' %}{{ docker_compose_version_latest }}{% else %}{{ docker_compose_version }}"
+        docker_compose_version_proposed: "{% if docker_compose_version == 'latest' %}{{ docker_compose_version_latest }}{% else %}{{ docker_compose_version }}{% endif %}"
 
     - name: Stat /usr/local/lib/docker/cli-plugins/docker-compose
       ansible.builtin.stat:
