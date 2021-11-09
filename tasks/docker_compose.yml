@@ -44,7 +44,7 @@
 
         - name: Set a fact for the version of Docker Compose that is installed
           set_fact:
-            docker_compose_installed_version: "{{ docker_compose_path_version.stdout.split(' ')[3] | trim }}"
+            docker_compose_version_installed: "{{ docker_compose_path_version.stdout.split(' ')[3] | trim }}"
 
       when: docker_compose_path.stat.exists
 
@@ -64,7 +64,7 @@
 
         - name: Docker Compose checksum present
           ansible.builtin.get_url:
-            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}.sha256"
+            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version_proposed }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}.sha256"
             dest: "{{ docker_compose_download_dir.path }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}.sha256"
             owner: root
             group: root
@@ -93,7 +93,7 @@
 
         - name: Docker Compose present
           ansible.builtin.get_url:
-            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
+            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version_proposed }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
             dest: /usr/local/lib/docker/cli-plugins/docker-compose
             force: true
             owner: root
@@ -101,7 +101,7 @@
             mode: 0755
             checksum: "{{ docker_compose_sha256 }}"
 
-      when: ( not docker_compose_path.stat.exists ) or ( docker_compose_version_installed != docker_compose_version_proposed )
+      when: ( not docker_compose_path.stat.exists ) or ( docker_compose_version_installed is defined and ( docker_compose_version_installed != docker_compose_version_proposed ) )
 
     - name: Check the Docker Compose version that is installed
       command: docker compose --ansi=never version
