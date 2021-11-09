@@ -146,7 +146,7 @@
         link: /usr/local/bin/docker-compose
         path: /usr/local/bin/compose-switch
         priority: 99
-      when: "/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines )
+      when: ( "/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines )
 
     - name: Check docker-compose version 1
       ansible.builtin.command: docker-compose-v1 --ansi=never version
