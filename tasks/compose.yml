@@ -36,7 +36,7 @@
     - name: Check the installed version of Docker Compose
       block:
 
-        - name: Check the installed version of Docker Compose
+        - name: Check the installed version of Docker Compose in the Docker cli plugin path
           command: /usr/local/lib/docker/cli-plugins/docker-compose --ansi=never version
           check_mode: false
           changed_when: false
@@ -45,6 +45,11 @@
         - name: Set a fact for the version of Docker Compose that is installed
           set_fact:
             docker_compose_version_installed: "{{ docker_compose_path_version.stdout.split(' ')[3] | trim }}"
+
+        - name: No upgrade of Docker Compose is needed
+          debug:
+            msg: "The installed version of Docker Compose {{ docker_compose_version_installed }} matched the proposed version {{ docker_compose_version_proposed }}"
+          when: docker_compose_version_installed == docker_compose_version_proposed
 
       when: docker_compose_path.stat.exists
 
@@ -103,16 +108,11 @@
 
       when: ( not docker_compose_path.stat.exists ) or ( docker_compose_version_installed is defined and ( docker_compose_version_installed != docker_compose_version_proposed ) )
 
-    - name: Check the Docker Compose version that is installed
+    - name: Check the Docker Compose version that is available in the default PATH using docker compose
       command: docker compose --ansi=never version
       check_mode: false
       changed_when: false
 
-    - name: Include Docker Compose Version 1 tasks
-      include_tasks: docker_compose_v1.yml
-      when: docker_compose_v1 is defined
-
   tags:
-    - docker
     - docker-compose
 ...

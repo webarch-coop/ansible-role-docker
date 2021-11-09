@@ -25,7 +25,7 @@
         - name: Set a fact if a newer version of Docker Compose Version 1 is specified
           ansible.builtin.set_fact:
             docker_compose_v1_upgrade: true
-          when: docker_compose_v1_installed is version(docker_compose_v1, '<')
+          when: docker_compose_v1_installed is version(docker_compose_version_v1, '<')
 
       when: ( docker_compose_v1_path is defined ) and ( "docker-compose" in docker_compose_v1_path.stdout )
 
@@ -45,7 +45,7 @@
 
         - name: Docker Compose Version 1 checksum present
           ansible.builtin.get_url:
-            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_v1 }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}.sha256"
+            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version_v1 }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}.sha256"
             dest: "{{ docker_compose_v1_download_dir.path }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}.sha256"
             owner: root
             group: root
@@ -66,7 +66,7 @@
 
         - name: Docker Compose Version 1 present
           ansible.builtin.get_url:
-            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_v1 }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version_v1 }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
             dest: /usr/local/bin/docker-compose-v1
             force: true
             owner: root
@@ -80,7 +80,7 @@
 
         - name: Docker Compose Version 1 Bash completion in place
           ansible.builtin.get_url:
-            url: "https://raw.githubusercontent.com/docker/compose/{{ docker_compose_v1 }}/contrib/completion/bash/docker-compose"
+            url: "https://raw.githubusercontent.com/docker/compose/{{ docker_compose_version_v1 }}/contrib/completion/bash/docker-compose"
             dest: /etc/bash_completion.d/docker-compose
             force: true
             owner: root
@@ -145,8 +145,6 @@
       check_mode: false
       changed_when: false
 
-  when: docker_compose_v1 is defined
   tags:
-    - docker
     - docker-compose
 ...

@@ -6,5 +6,7 @@ CE](https://docs.docker.com/engine/installation/linux/docker-ce/debian/) and
 v2](https://github.com/docker/compose#docker-compose-v2) and [Compose
 Switch](https://github.com/docker/compose-switch) on Debian. 
 
+See the [defaults/main.yml](defaults/main.yml) for the default settings.
+
 See also the [localhost repo](https://git.coop/webarch/localhost) for using
 this role to install Docker and Docker Compose on the `localhost`.
