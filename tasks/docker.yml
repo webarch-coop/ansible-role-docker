@@ -61,7 +61,7 @@
         group: root
         mode: 0755
 
-    - name: Docker configuration persent
+    - name: Docker configuration present
       ansible.builtin.template:
         src: templates/daemon.json.j2
         dest: /etc/docker/daemon.json
