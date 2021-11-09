@@ -126,7 +126,7 @@
 
     - name: Set a fact for the variable name for the proposed compose-switch sha256sum
       set_fact:
-        docker_compose_switch_proposed: "docker_compose_switch_{{ docker_compose_switch_latest | regex_replace('\\.', '_') }}_{{ docker_compose_architecture.stdout }}_sha256"
+        docker_compose_switch_proposed: "{{ docker_compose_switch_{{ docker_compose_switch_latest | regex_replace('\\.', '_') }}_{{ docker_compose_architecture.stdout }}_sha256 }}"
 
     - name: "Fail if a sha256 checksum for compose-switch version {{ docker_compose_switch_latest }} is not defined in the defaults"
       assert:
