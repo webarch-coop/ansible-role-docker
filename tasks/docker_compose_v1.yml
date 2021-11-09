@@ -124,6 +124,14 @@
       changed_when: false
       register: docker_compose_architecture
 
+    - name: Set a fact for the variable name for the proposed compose-switch sha256sum
+      set_fact:
+        docker_compose_switch_proposed: "docker_compose_switch_{{ docker_compose_switch_latest }}_{{ docker_compose_architecture.stdout }}_sha256"
+
+    - name: Debug proposed compose-switch sha256sum
+      debug:
+        var: "{{ docker_compose_switch_proposed }}"
+
     - name: Check the sha625sum of compose-switch
       block:
 
@@ -137,7 +145,7 @@
           debug:
             var: docker_compose_switch_installed.stat.checksum
 
-        - name: Debug expected sha256sum
+        - name: Set a fact to indicate that docker-switch needs to be upgraded
           debug:
             var: "docker_compose_switch_{{ docker_compose_switch_latest }}_{{ docker_compose_architecture.stdout }}_sha256"
 
