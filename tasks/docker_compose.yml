@@ -2,10 +2,6 @@
 - name: Install Docker Compose
   block:
 
-    - name: Include Docker Compose Version 1 tasks
-      include_tasks: docker_compose_v1.yml
-      when: docker_compose_v1 is defined
-
     - name: Check the latest version of Docker Compose
       ansible.builtin.uri:
         url: https://github.com/docker/compose/releases/latest
@@ -24,17 +20,30 @@
           - "Version: {{ docker_compose_headers.location | urlsplit('path') | basename }}"
         verbosity: 2
 
-    - name: Set a fact for the latest version of Docker Compose
+    - name: Set a fact for the latest and proposed versions of Docker Compose
       ansible.builtin.set_fact:
-        docker_compose_version: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
+        docker_compose_version_latest: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
+        docker_compose_version_proposed: "{% if docker_compose_version == 'latest' %}{{ docker_compose_version_latest }}{% else %}{{ docker_compose_version }}"
 
     - name: Stat /usr/local/lib/docker/cli-plugins/docker-compose
       ansible.builtin.stat:
         path: /usr/local/lib/docker/cli-plugins/docker-compose
       register: docker_compose_path
 
-    # TODO Add check to see what version of /usr/local/lib/docker/cli-plugins/docker-compose is installed
-    #      and upgrade it if it isn't the latest
+    - name: Check the installed version of Docker Compose
+      block:
+
+        - name: Check the installed version of Docker Compose
+          command: /usr/local/lib/docker/cli-plugins/docker-compose --ansi=never version
+          check_mode: false
+          changed_when: false
+          register: docker_compose_path_version
+
+        - name: Set a fact for the version of Docker Compose that is installed
+          set_fact:
+            docker_compose_installed_version: "{{ docker_compose_path_version.stdout..split(' ')[3] | trim }}"
+
+      when: docker_compose_path.stat.exists
 
     - name: Docker Compose present
       block:
@@ -89,7 +98,16 @@
             mode: 0755
             checksum: "{{ docker_compose_sha256 }}"
 
-      when: not docker_compose_path.stat.exists
+      when: ( not docker_compose_path.stat.exists ) or ( docker_compose_version_installed != docker_compose_version_proposed )
+
+    - name: Check the Docker Compose version that is installed
+      command: docker compose --ansi=never version
+      check_mode: false
+      changed_when: false
+
+    - name: Include Docker Compose Version 1 tasks
+      include_tasks: docker_compose_v1.yml
+      when: docker_compose_v1 is defined
 
   tags:
     - docker

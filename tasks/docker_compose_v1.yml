@@ -1,5 +1,5 @@
 ---
-- name: Install Docker Compose v1
+- name: Install Docker Compose v1 and compose-switch
   block:
 
     - name: Which Docker Compose Version 1
