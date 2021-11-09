@@ -147,7 +147,7 @@
 
         - name: Set a fact to indicate that docker-switch needs to be upgraded
           debug:
-            var: "docker_compose_switch_{{ docker_compose_switch_latest | regex_replace('[.]'. '_') }}_{{ docker_compose_architecture.stdout }}_sha256"
+            var: "docker_compose_switch_{{ docker_compose_switch_latest | regex_replace('[.]', '_') }}_{{ docker_compose_architecture.stdout }}_sha256"
 
         - name: Debug expected sha256sum
           debug:
