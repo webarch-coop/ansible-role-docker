@@ -111,88 +111,34 @@
       ansible.builtin.set_fact:
         docker_compose_switch_latest: "{{ docker_compose_switch_headers.location | urlsplit('path') | basename }}"
 
-    - name: Which Docker Compose Switch
-      ansible.builtin.command: which compose-switch
-      check_mode: false
-      changed_when: false
-      register: docker_compose_switch_path
-      failed_when: docker_compose_switch_path.rc is not regex('^0|1$')
-
     - name: Get the dpkg architecture
       ansible.builtin.command: dpkg --print-architecture
       check_mode: false
       changed_when: false
       register: docker_compose_architecture
 
-    - name: Set a fact for the variable name for the proposed compose-switch sha256sum
-      set_fact:
-        docker_compose_switch_proposed: "{{ docker_compose_switch_{{ docker_compose_switch_latest | regex_replace('\\.', '_') }}_{{ docker_compose_architecture.stdout }}_sha256 }}"
+    - name: Docker Compose Switch present
+      ansible.builtin.get_url:
+        url: "https://github.com/docker/compose-switch/releases/download/{{ docker_compose_switch_latest }}/docker-compose-linux-{{ docker_compose_architecture.stdout }}"
+        dest: /usr/local/bin/compose-switch
+        force: true
+        owner: root
+        group: root
+        mode: 0755
 
-    - name: "Fail if a sha256 checksum for compose-switch version {{ docker_compose_switch_latest }} is not defined in the defaults"
-      assert:
-        that:
-          - "{{ docker_compose_switch_proposed }} is defined"
+    - name: Set docker-compose-v1 alternative for docker-compose
+      community.general.alternatives:
+        name: docker-compose
+        link: /usr/local/bin/docker-compose
+        path: /usr/local/bin/docker-compose-v1
+        priority: 1
 
-    - name: Set a fact for the proposed compose-switch sha256sum
-      set_fact:
-        docker_compose_switch_proposed_sha256: "{{ docker_compose_switch_proposed }}"
-
-    - name: Debug sha256 of the compose-switch that is proposed
-      debug:
-        var: docker_compose_switch_proposed_sha256
-
-    - name: Check the sha625sum of compose-switch
-      block:
-
-        - name: Stat the compose-switch that is installed
-          ansible.builtin.stat:
-            path: "{{ docker_compose_switch_path.stdout }}"
-            checksum_algorithm: sha256
-          register: docker_compose_switch_installed
-
-        - name: Debug sha256 of the compose-switch that is installed
-          debug:
-            var: docker_compose_switch_installed.stat.checksum
-
-        - name: Set a fact to indicate that docker-switch needs to be upgraded
-          set_fact:
-            docker_compose_switch_upgrade: true
-          when: docker_compose_switch_installed.stat.checksum != docker_compose_switch_proposed_sha256
-
-      when: docker_compose_switch_path.rc == 0
-
-    - name: Install or upgrade Docker Compose Switch
-      block:
-
-        - name: Docker Compose Switch present
-          ansible.builtin.get_url:
-            url: "https://github.com/docker/compose-switch/releases/download/{{ docker_compose_switch_latest }}/docker-compose-linux-{{ docker_compose_architecture.stdout }}"
-            dest: /usr/local/bin/compose-switch
-            force: true
-            owner: root
-            group: root
-            mode: 0755
-
-        - name: Legacy Docker Compose absent
-          ansible.builtin.file:
-            path: /usr/local/bin/docker-compose
-            state: absent
-
-        - name: Set docker-compose-v1 alternative for docker-compose
-          community.general.alternatives:
-            name: docker-compose
-            link: /usr/local/bin/docker-compose
-            path: /usr/local/bin/docker-compose-v1
-            priority: 1
-
-        - name: Set compose-switch alternative for docker-compose
-          community.general.alternatives:
-            name: docker-compose
-            link: /usr/local/bin/docker-compose
-            path: /usr/local/bin/compose-switch
-            priority: 99
-
-      when: ( docker_compose_switch_path.rc == 1 ) or ( docker_compose_switch_upgrade is defined and docker_compose_switch_upgrade )
+    - name: Set compose-switch alternative for docker-compose
+      community.general.alternatives:
+        name: docker-compose
+        link: /usr/local/bin/docker-compose
+        path: /usr/local/bin/compose-switch
+        priority: 99
 
     - name: Check docker-compose
       ansible.builtin.command: update-alternatives --display docker-compose
