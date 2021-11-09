@@ -132,16 +132,13 @@
       changed_when: false
       register: docker_compose_alternatives_existing
 
-    - name: Debug docker-compose alternatives
-      debug:
-        var: docker_compose_alternatives_existing.stdout 
-
     - name: Set docker-compose-v1 alternative for docker-compose
       community.general.alternatives:
         name: docker-compose
         link: /usr/local/bin/docker-compose
         path: /usr/local/bin/docker-compose-v1
         priority: 1
+      when: ( "/usr/local/bin/docker-compose-v1 - priority 1" not in docker_compose_alternatives_existing.stdout_lines )
 
     - name: Set compose-switch alternative for docker-compose
       community.general.alternatives:
@@ -149,6 +146,7 @@
         link: /usr/local/bin/docker-compose
         path: /usr/local/bin/compose-switch
         priority: 99
+      when: "/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines )
 
     - name: Check docker-compose version 1
       ansible.builtin.command: docker-compose-v1 --ansi=never version
