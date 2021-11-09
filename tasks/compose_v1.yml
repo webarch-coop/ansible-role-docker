@@ -74,9 +74,12 @@
             mode: 0755
             checksum: "{{ docker_compose_v1_sha256 }}"
 
-        - name: Docker Compose Version 1 checked
-          ansible.builtin.command: docker-compose-v1 -v --no-ansi
+        - name: Check docker-compose version 1
+          ansible.builtin.command: docker-compose-v1 --ansi=never version
           check_mode: false
+          changed_when: false
+          register: docker_compose_v1_check
+          failed_when: ( docker_compose_v1_check.rc != 0 ) or ( docker_compose_version_v1 not in docker_compose_v1_check.stdout )
 
         - name: Docker Compose Version 1 Bash completion in place
           ansible.builtin.get_url:
@@ -148,10 +151,12 @@
         priority: 99
       when: ( "/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines )
 
-    - name: Check docker-compose version 1
-      ansible.builtin.command: docker-compose-v1 --ansi=never version
+    - name: Check compose-switch is working for docker-compose
+      ansible.builtin.command: docker-compose --ansi=never version
       check_mode: false
       changed_when: false
+      register: docker_compose_switch_check
+      failed_when: ( docker_compose_switch_check.rc != 0 ) or ( "Docker Compose version" not in docker_compose_switch_check.stdout )
 
   tags:
     - docker-compose
