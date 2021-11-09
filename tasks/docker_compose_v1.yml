@@ -131,11 +131,16 @@
           ansible.builtin.stat:
             path: "{{ docker_compose_switch_path.stdout }}"
             checksum_algorithm: sha256
+            check_mode: false
           register: docker_compose_switch_installed
 
-        - name: Debug sha256 ofi the compose-switch that is installed
+        - name: Debug sha256 of the compose-switch that is installed
           debug:
             var: docker_compose_switch_installed.stat.checksum
+
+        - name: Debug expected sha256sum
+          debug:
+            var: "docker_compose_switch_versions.{{ docker_compose_switch_latest }}.{{ docker_compose_architecture.stdout }}.sha256"
 
       when: docker_compose_switch_path.rc == 0
 
@@ -180,5 +185,5 @@
   when: docker_compose_v1 is defined
   tags:
     - docker
-    - docker_compose
+    - docker-compose
 ...
