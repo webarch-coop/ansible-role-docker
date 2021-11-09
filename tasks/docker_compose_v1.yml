@@ -118,14 +118,29 @@
       register: docker_compose_switch_path
       failed_when: docker_compose_switch_path.rc is not regex('^0|1$')
 
-    - name: Install or upgrade Docker Compose Switch
+    - name: Get the dpkg architecture
+      ansible.builtin.command: dpkg --print-architecture
+      check_mode: false
+      changed_when: false
+      register: docker_compose_architecture
+
+    - name: Check the sha625sum of compose-switch
       block:
 
-        - name: Get the dpkg architecture
-          ansible.builtin.command: dpkg --print-architecture
-          check_mode: false
-          changed_when: false
-          register: docker_compose_architecture
+        - name: Generate a sha256sum of the compose-switch that is installed
+          ansible.builtin.stat:
+            path: "{{ docker_compose_switch_path.stdout }}"
+            checksum_algorithm: sha256
+          register: docker_compose_switch_installed
+
+        - name: Debug sha256 ofi the compose-switch that is installed
+          debug:
+            var: docker_compose_switch_installed.stat.checksum
+
+      when: docker_compose_switch_path.rc == 0
+
+    - name: Install or upgrade Docker Compose Switch
+      block:
 
         - name: Docker Compose Switch present
           ansible.builtin.get_url:
