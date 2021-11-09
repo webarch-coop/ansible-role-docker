@@ -126,6 +126,16 @@
         group: root
         mode: 0755
 
+    - name: Check docker-compose alternatives
+      ansible.builtin.command: update-alternatives --display docker-compose
+      check_mode: false
+      changed_when: false
+      register: docker_compose_alternatives_existing
+
+    - name: Debug docker-compose alternatives
+      debug:
+        var: docker_compose_alternatives_existing.stdout 
+
     - name: Set docker-compose-v1 alternative for docker-compose
       community.general.alternatives:
         name: docker-compose
@@ -140,8 +150,8 @@
         path: /usr/local/bin/compose-switch
         priority: 99
 
-    - name: Check docker-compose
-      ansible.builtin.command: update-alternatives --display docker-compose
+    - name: Check docker-compose version 1
+      ansible.builtin.command: docker-compose-v1 --ansi=never version
       check_mode: false
       changed_when: false
 

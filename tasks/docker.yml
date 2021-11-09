@@ -2,7 +2,7 @@
 - name: Install Docker
   block:
 
-    - name: Requirements persent
+    - name: Requirements present
       ansible.builtin.apt:
         pkg:
           - apt-transport-https
