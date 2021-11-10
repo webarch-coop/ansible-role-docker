@@ -134,6 +134,7 @@
       check_mode: false
       changed_when: false
       register: docker_compose_alternatives_existing
+      failed_when: docker_compose_alternatives_existing.rc is not regex('^0|2$)
 
     - name: Set docker-compose-v1 alternative for docker-compose
       community.general.alternatives:
@@ -141,7 +142,7 @@
         link: /usr/local/bin/docker-compose
         path: /usr/local/bin/docker-compose-v1
         priority: 1
-      when: ( "/usr/local/bin/docker-compose-v1 - priority 1" not in docker_compose_alternatives_existing.stdout_lines )
+      when: ( "/usr/local/bin/docker-compose-v1 - priority 1" not in docker_compose_alternatives_existing.stdout_lines ) or ( docker_compose_alternatives_existing.rc != 0 )
 
     - name: Set compose-switch alternative for docker-compose
       community.general.alternatives:
@@ -149,7 +150,7 @@
         link: /usr/local/bin/docker-compose
         path: /usr/local/bin/compose-switch
         priority: 99
-      when: ( "/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines )
+      when: ( "/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines ) or ( docker_compose_alternatives_existing.rc != 0 )
 
     - name: Check compose-switch is working for docker-compose
       ansible.builtin.command: docker-compose --ansi=never version
