@@ -134,7 +134,7 @@
       check_mode: false
       changed_when: false
       register: docker_compose_alternatives_existing
-      failed_when: docker_compose_alternatives_existing.rc is not regex('^0|2$)
+      failed_when: docker_compose_alternatives_existing.rc is not regex('^0|2$')
 
     - name: Set docker-compose-v1 alternative for docker-compose
       community.general.alternatives:
