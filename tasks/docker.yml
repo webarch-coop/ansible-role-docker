@@ -38,9 +38,15 @@
         url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
         state: present
 
+    - name: Print the dpkg architecture
+      ansible.builtin.command: dpkg --print-architecture
+      check_mode: false
+      changed_when: false
+      register: docker_arch
+
     - name: Docker apt repo available
       ansible.builtin.apt_repository:
-        repo: "deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+        repo: "deb [arch={{ docker_arch.stdout }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
         filename: "docker"
         state: present
 
