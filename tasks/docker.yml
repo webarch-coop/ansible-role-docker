@@ -30,6 +30,8 @@
           - docker-engine
           - docker.io
           - runc
+        autoclean: true
+        autoremove: true
         state: absent
 
     - name: Old Docker apt sources list absent
