@@ -2,10 +2,19 @@
 - name: Install Docker Compose
   block:
 
-    - name: Docker Compose version 1 absent
-      file:
-        path: /usr/local/bin/docker-compose
-        state: absent
+    - name: Remove Docker Composer version 1
+      block:
+
+        - name: Docker Compose version 1 absent
+          file:
+            path: /usr/local/bin/docker-compose
+            state: absent
+
+        - name: Docker Compose version 1 Bash completion absent
+          file:
+            path: /etc/bash_completion.d/docker-compose
+            state: absent
+
       when: not docker_compose_v1 | bool
 
     - name: Docker Compose present
