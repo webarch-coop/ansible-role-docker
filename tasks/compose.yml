@@ -33,6 +33,11 @@
       command: docker compose --ansi=never version
       check_mode: false
       changed_when: false
+      register: docker_compose_installed
+
+    - name: Print the installed version of Docker Compose
+      debug:
+        var: docker_compose_installed.stdout
 
   tags:
     - docker-compose
