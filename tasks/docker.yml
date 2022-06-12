@@ -32,6 +32,11 @@
           - runc
         state: absent
 
+    - name: Old Docker apt sources list absent
+      file:
+        path: download_docker_com_linux_debian.list
+        state: absent
+
     - name: Docker GPG key present
       ansible.builtin.apt_key:
         id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88

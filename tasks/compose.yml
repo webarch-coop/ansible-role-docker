@@ -2,111 +2,17 @@
 - name: Install Docker Compose
   block:
 
-    - name: Check the latest version of Docker Compose
-      ansible.builtin.uri:
-        url: https://github.com/docker/compose/releases/latest
-        method: HEAD
-        status_code: 302
-        follow_redirects: none
-      check_mode: false
-      changed_when: false
-      register: docker_compose_headers
-
-    - name: Debug Docker Compose latest headers
-      ansible.builtin.debug:
-        msg:
-          - "Location: {{ docker_compose_headers.location }}"
-          - "Path: {{ docker_compose_headers.location | urlsplit('path') }}"
-          - "Version: {{ docker_compose_headers.location | urlsplit('path') | basename }}"
-        verbosity: 2
-
-    - name: Set a fact for the latest version of Docker Compose
-      ansible.builtin.set_fact:
-        docker_compose_version_latest: "{{ docker_compose_headers.location | urlsplit('path') | basename }}"
-
-    - name: Set a fact for the proposed version of Docker Compose
-      ansible.builtin.set_fact:
-        docker_compose_version_proposed: "{% if docker_compose_version == 'latest' %}{{ docker_compose_version_latest }}{% else %}{{ docker_compose_version }}{% endif %}"
-
-    - name: Stat /usr/local/lib/docker/cli-plugins/docker-compose
-      ansible.builtin.stat:
-        path: /usr/local/lib/docker/cli-plugins/docker-compose
-      register: docker_compose_path
-
-    - name: Check the installed version of Docker Compose
-      block:
-
-        - name: Check the installed version of Docker Compose in the Docker cli plugin path
-          command: /usr/local/lib/docker/cli-plugins/docker-compose --ansi=never version
-          check_mode: false
-          changed_when: false
-          register: docker_compose_path_version
-
-        - name: Set a fact for the version of Docker Compose that is installed
-          set_fact:
-            docker_compose_version_installed: "{{ docker_compose_path_version.stdout.split(' ')[3] | trim }}"
-
-        - name: No upgrade of Docker Compose is needed
-          debug:
-            msg: "The installed version of Docker Compose {{ docker_compose_version_installed }} matched the proposed version {{ docker_compose_version_proposed }}"
-          when: docker_compose_version_installed == docker_compose_version_proposed
-
-      when: docker_compose_path.stat.exists
+    - name: Docker Compose version 1 absent
+      file:
+        path: /usr/local/bin/docker-compose
+        state: absent
+      when: not docker_compose_v1 | bool
 
     - name: Docker Compose present
-      block:
-
-        - name: Gather Ansible hardware facts
-          ansible.builtin.setup:
-            gather_subset:
-              - hardware
-
-        - name: Temporary download directory registered
-          ansible.builtin.tempfile:
-            state: directory
-            suffix: docker-compose
-          register: docker_compose_download_dir
-
-        - name: Docker Compose checksum present
-          ansible.builtin.get_url:
-            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version_proposed }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}.sha256"
-            dest: "{{ docker_compose_download_dir.path }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}.sha256"
-            owner: root
-            group: root
-            mode: 0644
-
-        - name: Docker Compose base64 encoded version sha256 checksum slurped
-          ansible.builtin.slurp:
-            src: "{{ docker_compose_download_dir.path }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}.sha256"
-          register: docker_compose_sha256_b64encoded
-
-        - name: Docker Compose base64 encoded version of the sha256 checksum decoded
-          ansible.builtin.set_fact:
-            docker_compose_sha256_file: "sha256:{{ docker_compose_sha256_b64encoded['content'] | b64decode }}"
-
-        - name: Docker Compose sha256 checksum string first value following split on spaces
-          ansible.builtin.set_fact:
-            docker_compose_sha256: "{{ docker_compose_sha256_file.split(' ')[0] }}"
-
-        - name: Docker CLI plugins directory present
-          ansible.builtin.file:
-            path: /usr/local/lib/docker/cli-plugins
-            state: directory
-            owner: root
-            group: root
-            mode: 0755
-
-        - name: Docker Compose present
-          ansible.builtin.get_url:
-            url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version_proposed }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
-            dest: /usr/local/lib/docker/cli-plugins/docker-compose
-            force: true
-            owner: root
-            group: root
-            mode: 0755
-            checksum: "{{ docker_compose_sha256 }}"
-
-      when: ( not docker_compose_path.stat.exists ) or ( docker_compose_version_installed is defined and ( docker_compose_version_installed != docker_compose_version_proposed ) )
+      apt:
+        pkg:
+          - docker-compose
+        state: present
 
     - name: Check the Docker Compose version that is available in the default PATH using docker compose
       command: docker compose --ansi=never version
