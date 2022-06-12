@@ -10,9 +10,6 @@ docker_compose_version: latest
 # Use a specific version for docker_compose_version_v1
 docker_compose_version_v1: 1.29.2
 docker_daemon:
-  dns:
-    - 1.1.1.1
-    - 1.1.2.2
   storage-driver: overlay2
   log-driver: syslog
 ...
