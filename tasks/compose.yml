@@ -20,7 +20,7 @@
     - name: Docker Compose present
       apt:
         pkg:
-          - docker-compose
+          - docker-compose-plugin
         state: present
 
     - name: Check the Docker Compose version that is available in the default PATH using docker compose
