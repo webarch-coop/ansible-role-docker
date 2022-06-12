@@ -34,7 +34,7 @@
 
     - name: Old Docker apt sources list absent
       file:
-        path: download_docker_com_linux_debian.list
+        path: /etc/apt/sources.list.d/download_docker_com_linux_debian.list
         state: absent
 
     - name: Docker GPG key present
