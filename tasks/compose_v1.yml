@@ -90,7 +90,7 @@
             group: root
             mode: 0644
 
-      when: ( docker_compose_v1_path.rc == 1 ) or ( docker_compose_v1_upgrade is defined and docker_compose_v1_upgrade )
+      when: ( docker_compose_v1_path.rc == 1 ) or ( docker_compose_v1_upgrade is defined and docker_compose_v1_upgrade | bool )
 
     - name: Check the latest version of Docker Compose Switch
       ansible.builtin.uri:

@@ -1,19 +1,19 @@
 ---
 - name: Install Docker
   include_tasks: docker.yml
-  when: ( docker is defined ) and ( docker )
+  when: ( docker is defined ) and ( docker | bool )
   tags:
     - docker
 
 - name: Install Docker Compose
   include_tasks: compose.yml
-  when: ( docker_compose is defined ) and ( docker_compose )
+  when: ( docker_compose is defined ) and ( docker_compose | bool )
   tags:
     - docker-compose
 
 - name: Include Docker Compose Version 1 tasks
   include_tasks: compose_v1.yml
-  when: ( docker_compose_v1 is defined ) and ( docker_compose_v1 )
+  when: ( docker_compose_v1 is defined ) and ( docker_compose_v1 | bool )
   tags:
     - docker-compose
 ...
