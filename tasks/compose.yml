@@ -6,17 +6,17 @@
       block:
 
         - name: Docker Compose version 1 absent
-          file:
+          ansible.builtin.file:
             path: /usr/local/bin/docker-compose
             state: absent
 
         - name: Docker Compose version 1 Bash completion absent
-          file:
+          ansible.builtin.file:
             path: /etc/bash_completion.d/docker-compose
             state: absent
 
         - name: Docker Compose apt package absent
-          apt:
+          ansible.builtin.apt:
             pkg:
               - docker-compose
             state: absent
@@ -24,19 +24,19 @@
       when: not docker_compose_v1 | bool
 
     - name: Docker Compose present
-      apt:
+      ansible.builtin.apt:
         pkg:
           - docker-compose-plugin
         state: present
 
     - name: Check the Docker Compose version that is available in the default PATH using docker compose
-      command: docker compose --ansi=never version
+      ansible.builtin.command: docker compose --ansi=never version
       check_mode: false
       changed_when: false
       register: docker_compose_installed
 
     - name: Print the installed version of Docker Compose
-      debug:
+      ansible.builtin.debug:
         var: docker_compose_installed.stdout
 
   tags:

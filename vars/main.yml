@@ -1,0 +1,10 @@
+---
+docker_gpg_checksum: "sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570"
+docker_gpg_fingerprint: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+docker_pkg:
+  - containerd.io
+  - docker-ce
+  - docker-ce-cli
+  - docker-ce-rootless-extras
+  - docker-scan-plugin
+...
