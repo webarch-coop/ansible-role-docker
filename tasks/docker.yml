@@ -64,6 +64,26 @@
       changed_when: false
       register: docker_arch
 
+    - name: Docker gpg key present
+      ansible.builtin.get_url:
+        url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+        checksum: "{{ docker_gpg_checksum }}"
+        dest: /etc/apt/keyrings/docker.asc
+        mode: 0644
+        owner: root
+        group: root
+
+    - name: Docker gpg key check command
+      ansible.builtin.command: gpg --with-colons --with-fingerprint --with-subkey-fingerprint /etc/apt/keyrings/docker.asc
+      check_mode: false
+      changed_when: false
+      register: docker_gpg
+
+    - name: Docker gpg key checked
+      ansible.builtin.assert:
+        that:
+          - docker_gpg_fingerprint in docker_gpg.stdout
+
     - name: Docker apt repo available
       ansible.builtin.template:
         src: docker.sources.j2
