@@ -1,6 +1,6 @@
 ---
 # Get the sha256 checksum using the following command
-# wget -q https://download.docker.com/linux/debian/gpg -O - | sha256sum - | awk '{ print $1 }'
+# wget -q https://download.docker.com/linux/debian/gpg -O - | sha256sum - | awk '{ print $1 }' | sed 's/^/"sha256:/' | sed 's/$/"/'
 docker_gpg_checksum: "sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570"
 
 # Get the gpg fingerprints using the following command
@@ -10,7 +10,7 @@ docker_gpg_fingerprints:
   - D3306A018370199E527AE7997EA0A9C3F273FCD8
 
 # Get the packages using the following command
-# grep Package /var/lib/apt/lists/download.docker.com_linux_debian_dists_bullseye_stable_binary-amd64_Packages | sed 's/^Package: //' | uniq | sort | sed 's/^/  - /'
+# grep Package /var/lib/apt/lists/download.docker.com_*_Packages | sed 's/^Package: //' | uniq | sort | sed 's/^/  - /'
 docker_pkg:
   - containerd.io
   - docker-ce
