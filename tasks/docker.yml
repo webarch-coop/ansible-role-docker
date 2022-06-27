@@ -95,7 +95,7 @@
       loop_control:
         extended: true
         loop_var: fpr
-        label: "{{ ansible_loop.index }}"
+        label: "fingerprint {{ ansible_loop.index }}"
 
     - name: Docker apt repo available
       ansible.builtin.template:
