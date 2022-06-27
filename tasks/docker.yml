@@ -82,7 +82,7 @@
         group: root
 
     - name: Docker gpg key check command
-      ansible.builtin.command: gpg --with-colons --with-fingerprint --with-subkey-fingerprint /etc/apt/keyrings/docker.asc
+      ansible.builtin.command: gpg --with-colons --show-keys /etc/apt/keyrings/docker.asc
       check_mode: false
       changed_when: false
       register: docker_gpg
@@ -90,7 +90,12 @@
     - name: Docker gpg key checked
       ansible.builtin.assert:
         that:
-          - docker_gpg_fingerprint in docker_gpg.stdout
+          - fpr in docker_gpg.stdout
+      loop: "{{ docker_gpg_fingerprints }}"
+      loop_control:
+        extended: true
+        loop_var: fpr
+        label: "{{ ansible_loop.index }}"
 
     - name: Docker apt repo available
       ansible.builtin.template:
