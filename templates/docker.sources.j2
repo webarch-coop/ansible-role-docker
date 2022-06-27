@@ -3,6 +3,6 @@
 Types: deb 
 URIs: https://download.docker.com/linux/{{ ansible_distribution | lower }}
 Architectures: {{ ansible_facts.ansible_local.dpkg_arch.arch }}
-Components: main
+Components: stable
 Suites: {{ ansible_distribution_release }}
 Signed-By: /etc/apt/keyrings/docker.asc
