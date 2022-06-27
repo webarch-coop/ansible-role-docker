@@ -6,8 +6,8 @@ docker_gpg_checksum: "sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975
 # You can get the gpg fingerprints using the following command
 # wget -q https://download.docker.com/linux/debian/gpg -O - | gpg --with-colons --show-keys - | grep ^fpr | sed 's/^fpr//' | sed 's/://g' | sed 's/^/  - /'
 docker_gpg_fingerprints:
-- 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-- D3306A018370199E527AE7997EA0A9C3F273FCD8
+  - 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+  - D3306A018370199E527AE7997EA0A9C3F273FCD8
 
 docker_pkg:
   - containerd.io
