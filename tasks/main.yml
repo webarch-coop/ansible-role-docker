@@ -6,19 +6,19 @@
     - docker
     - docker-compose
 
-- name: Install Docker
+- name: Include install Docker tasks
   ansible.builtin.include_tasks: docker.yml
   when: ( docker is defined ) and ( docker | bool )
   tags:
     - docker
 
-- name: Install Docker Compose
+- name: Include install Docker Compose tasks
   ansible.builtin.include_tasks: compose.yml
   when: ( docker_compose is defined ) and ( docker_compose | bool )
   tags:
     - docker-compose
 
-- name: Include Docker Compose Version 1 tasks
+- name: Include install Docker Compose version 1 tasks
   ansible.builtin.include_tasks: compose_v1.yml
   when: ( docker_compose_v1 is defined ) and ( docker_compose_v1 | bool )
   tags:
