@@ -72,17 +72,40 @@
         owner: root
         group: root
 
-    - name: Docker gpg key present
+    - name: Docker ascii armored gpg key present
       ansible.builtin.get_url:
-        url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+        url: "{{ docker_gpg_url }}"
         checksum: "{{ docker_gpg_checksum }}"
-        dest: /etc/apt/keyrings/docker.asc
+        dest: /root/docker.asc
         mode: 0644
         owner: root
         group: root
+      register: docker_gpg_asc_file
+
+    - name: Stat Docker gpg asc file
+      ansible.builtin.stat:
+        path: /etc/apt/keyrings/docker.gpg
+      register: docker_gpg_file
+
+    - name: Docker gpg key dearmored
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        gpg --dearmor < /root/docker.asc > /etc/apt/keyrings/docker.gpg
+      args:
+        executable: "{% if ansible_distribution == 'Ubuntu' %}/usr/bin/bash{% elif ansible_distribution == 'Debian' %}/bin/bash{% endif %}"
+      when: ( docker_gpg_asc_file.changed | bool ) or ( not docker_gpg_file.stat.exists | bool )
 
     - name: Docker gpg key check command
-      ansible.builtin.command: gpg --with-colons --show-keys /etc/apt/keyrings/docker.asc
+      ansible.builtin.command:
+        gpg --with-colons
+        {% if ansible_distribution == "Ubuntu" and ansible_distribution_version is version('18.04', '<=') %}
+        --with-fingerprint --with-subkey-fingerprint
+        {% elif ansible_distribution == "Debian" and ansible_distribution_version is version('10.0', '<=') %}
+        --with-fingerprint --with-subkey-fingerprint
+        {% else %}
+        --show-keys
+        {% endif %}
+        /etc/apt/keyrings/docker.gpg
       check_mode: false
       changed_when: false
       register: docker_gpg

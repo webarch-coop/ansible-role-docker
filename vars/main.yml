@@ -1,4 +1,8 @@
 ---
+# ASCII armored GPG public key URL linked from
+# https://docs.docker.com/engine/install/debian/
+docker_gpg_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+
 # Get the sha256 checksum using the following command
 # wget -q https://download.docker.com/linux/debian/gpg -O - | sha256sum - | awk '{ print $1 }' | sed 's/^/"sha256:/' | sed 's/$/"/'
 docker_gpg_checksum: "sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570"
@@ -9,6 +13,9 @@ docker_gpg_fingerprints:
   - 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
   - D3306A018370199E527AE7997EA0A9C3F273FCD8
 
+# Packages available will vary between distros, you can get the packages installed from this repo using
+# aptitude search "?origin (docker) ?installed"
+#
 # Get the packages using the following command
 # grep Package /var/lib/apt/lists/download.docker.com_*_Packages | sed 's/^Package: //' | uniq | sort | sed 's/^/  - /'
 docker_pkg:
