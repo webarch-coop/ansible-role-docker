@@ -1,13 +1,7 @@
 ---
-# If any of the next three variables are set to false then the install tasks will
-# be skipped for that package
 docker: true
 docker_compose: true
-docker_compose_v1: true
-# https://github.com/docker/compose/releases
-# Set docker_compose_version to "latest" or a specific version like "v2.1.0"
-docker_compose_version: latest
-# Use a specific version for docker_compose_version_v1
+docker_compose_v1: false
 docker_compose_version_v1: 1.29.2
 docker_daemon:
   storage-driver: overlay2
