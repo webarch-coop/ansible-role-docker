@@ -1,4 +1,4 @@
-# Webarchitects Ansible Docker and Docker Compose Role
+# Webarchitects Ansible Docker Role
 
 [![pipeline status](https://git.coop/webarch/docker/badges/master/pipeline.svg)](https://git.coop/webarch/docker/-/commits/master)
 
@@ -58,6 +58,18 @@ See the [defaults/main.yml](defaults/main.yml) for the default settings and [var
     </tr>
   </tbody>
 </table>
+
+See the [documentation for the Docker daemon config file](https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file) for all the options available and convert these to YAML or use by this role, for example:
+
+```yml
+docker_daemon:
+  storage-driver: overlay2
+  log-driver: syslog
+  dns:
+    - 1.1.1.1
+    - 8.8.8.8
+    - 9.9.9.9
+```
 
 The primary URL of this repo is [`https://git.coop/webarch/docker`](https://git.coop/webarch/docker) however it is also [mirrored to GitHub](https://github.com/webarch-coop/ansible-role-docker) and [available via Ansible Galaxy](https://galaxy.ansible.com/chriscroome/docker).
 
