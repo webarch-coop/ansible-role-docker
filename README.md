@@ -2,12 +2,12 @@
 
 [![pipeline status](https://git.coop/webarch/docker/badges/master/pipeline.svg)](https://git.coop/webarch/docker/-/commits/master)
 
-Ansible Role and to install [Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/debian/) on Debian and Ubuntu.
+Ansible Role to install [Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/debian/) on Debian and Ubuntu.
 
 
 This role can also optionally install the last version of `docker-compose` version 1, [Docker Compose 1.29.2 ](https://github.com/docker/compose/tree/5becea4ca9f68875334c92f191a13482bcd6e5cf#docker-compose) and [Compose Switch](https://github.com/docker/compose-switch).
 
-See the [defaults/main.yml](defaults/main.yml) for the default settings and [vars/main.yml](vars/main.yml) for the GPG and apt variables.
+See the [defaults/main.yml](defaults/main.yml) for the default settings and [vars/main.yml](vars/main.yml) for the `gpg` and `apt` variables.
 
 <table>
   <thead>
@@ -21,7 +21,7 @@ See the [defaults/main.yml](defaults/main.yml) for the default settings and [var
     <tr>
       <td><code>docker</code></td>
       <td><code>true</code></td>
-      <td>Set to false for the tasks in this role to be skipped</td>
+      <td>Set to `false` for the tasks in this role to be skipped</td>
     </tr>
     <tr>
       <td><code>docker_compose_v1</code></td>
@@ -31,7 +31,7 @@ See the [defaults/main.yml](defaults/main.yml) for the default settings and [var
     <tr>
       <td><code>docker_compose_version_v1</code></td>
       <td><code>1.29.2</code></td>
-      <td>The version number of <code>docker-compose</code> version 1 to be installed</td>
+      <td>The version number of <code>docker-compose</code> version 1 to be installed when `docker_compose_v1` is defined and `true`</td>
     </tr>
     <tr>
       <td><code>docker_daemon</code></td>
@@ -59,7 +59,7 @@ See the [defaults/main.yml](defaults/main.yml) for the default settings and [var
   </tbody>
 </table>
 
-See the [documentation for the Docker daemon config file](https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file) for all the options available and convert these to YAML or use by this role, for example:
+See the [documentation for the Docker daemon config file](https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file) for all the options available and convert these to YAML for use by this role, for example:
 
 ```yml
 docker_daemon:
@@ -71,10 +71,10 @@ docker_daemon:
     - 9.9.9.9
 ```
 
-The role has uses `.sources` rather than `.list` files for `apt` and it also checks the `gpg` public key used to sign packages and limits what packages can be installed from the Docker repo.
+The role uses `.sources` rather than `.list` files for `apt` and it also checks the `gpg` public key used to sign packages and limits what packages can be installed from the Docker repo.
 
 The primary URL of this repo is [`https://git.coop/webarch/docker`](https://git.coop/webarch/docker) however it is also [mirrored to GitHub](https://github.com/webarch-coop/ansible-role-docker) and [available via Ansible Galaxy](https://galaxy.ansible.com/chriscroome/docker).
 
 If you use this role please use a tagged release, see [the release notes](https://git.coop/webarch/docker/-/releases).
 
-See also the [localhost repo](https://git.coop/webarch/localhost) for using this role to install Docker and Docker Compose on the `localhost`.
+See also the [localhost repo](https://git.coop/webarch/localhost) for using this role to install Docker on the `localhost`.
