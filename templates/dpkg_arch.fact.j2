@@ -2,7 +2,7 @@
 # {{ ansible_managed }}
 
 set -euo pipefail
-DPKG="{{ apt_dpkg }}"
+DPKG="{{ docker_dpkg }}"
 
 if [[ -f "${DPKG}" ]]; then
   ARCH=$("${DPKG}" --print-architecture)

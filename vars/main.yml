@@ -1,4 +1,7 @@
 ---
+# The path to dpkg
+docker_dpkg: /usr/bin/dpkg
+
 # ASCII armored GPG public key URL linked from
 # https://docs.docker.com/engine/install/debian/
 docker_gpg_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
