@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{% for pkg in docker_pkg %}
+{% for pkg in docker_repo_pkg %}
 Package: {{ pkg }}
 Pin: origin download.docker.com
 Pin-Priority: 100

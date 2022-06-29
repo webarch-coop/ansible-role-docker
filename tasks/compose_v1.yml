@@ -1,5 +1,31 @@
 ---
-- name: Install Docker Compose v1 and compose-switch
+- name: Uninstall Docker Compose version 1.x and compose-switch
+  block:
+
+    - name: Docker Compose apt package absent
+      ansible.builtin.apt:
+        pkg:
+          - docker-compose
+        state: absent
+
+    - name: Docker Compose version 1 absent
+      ansible.builtin.file:
+        path: "{{ path }}"
+        state: absent
+      loop:
+        - /usr/local/bin/docker-compose
+        - /usr/local/bin/docker-compose-v1
+        - /usr/local/bin/compose-switch
+        - /etc/bash_completion.d/docker-compose
+      loop_control:
+        loop_var: path
+
+  when: ( docker_compose_v1 is defined ) and ( not docker_compose_v1 | bool )
+  tags:
+    - docker
+    - docker_compose_v1
+
+- name: Install Docker Compose version 1.x and compose-switch
   block:
 
     - name: Which Docker Compose Version 1
@@ -159,6 +185,8 @@
       register: docker_compose_switch_check
       failed_when: ( docker_compose_switch_check.rc != 0 ) or ( "Docker Compose version" not in docker_compose_switch_check.stdout )
 
+  when: ( docker_compose_v1 is defined ) and ( docker_compose_v1 | bool )
   tags:
-    - docker-compose
+    - docker
+    - docker_compose_v1
 ...

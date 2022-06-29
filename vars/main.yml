@@ -18,7 +18,7 @@ docker_gpg_fingerprints:
 #
 # Get the packages using the following command
 # grep Package /var/lib/apt/lists/download.docker.com_*_Packages | sed 's/^Package: //' | uniq | sort | sed 's/^/  - /'
-docker_pkg:
+docker_repo_pkg:
   - containerd.io
   - docker-ce
   - docker-ce-cli

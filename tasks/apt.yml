@@ -1,38 +1,6 @@
 ---
-- name: Install Docker
+- name: Configure Docker apt repo
   block:
-
-    - name: Requirements present
-      ansible.builtin.apt:
-        pkg:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg
-          - lsb-release
-          - python3-docker
-          - software-properties-common
-        state: present
-
-    - name: Python 2 package present
-      ansible.builtin.apt:
-        pkg:
-          - python-docker
-        state: present
-        update_cache: false
-      when: ansible_distribution_release is regex('stretch|buster')
-
-    - name: Legacy Docker packages absent
-      ansible.builtin.apt:
-        pkg:
-          - containerd
-          - docker
-          - docker-engine
-          - docker.io
-          - runc
-        autoclean: true
-        autoremove: true
-        state: absent
 
     - name: Legacy Docker apt sources list absent
       ansible.builtin.file:
@@ -45,24 +13,10 @@
         loop_var: apt_list
         label: "{{ apt_list | basename }}"
 
-    - name: Legacy Docker GPG key present
+    - name: Legacy Docker GPG key absent
       ansible.builtin.apt_key:
         id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
         state: absent
-
-    - name: Dependencies present
-      ansible.builtin.apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - python3-docker
-        state: present
-
-    - name: Print the dpkg architecture
-      ansible.builtin.command: dpkg --print-architecture
-      check_mode: false
-      changed_when: false
-      register: docker_arch
 
     - name: Apt keyrings directory present
       ansible.builtin.file:
@@ -96,11 +50,11 @@
       when: ( docker_gpg_asc_file.changed | bool ) or ( not docker_gpg_file.stat.exists | bool )
 
     - name: Docker gpg key check command
-      ansible.builtin.command:
+      ansible.builtin.command: >
         gpg --with-colons
         {% if ansible_distribution == "Ubuntu" and ansible_distribution_version is version('18.04', '<=') %}
         --with-fingerprint --with-subkey-fingerprint
-        {% elif ansible_distribution == "Debian" and ansible_distribution_version is version('10.0', '<=') %}
+        {% elif ansible_distribution == "Debian" and ansible_distribution_version is version('10.0', '<') %}
         --with-fingerprint --with-subkey-fingerprint
         {% else %}
         --show-keys
@@ -114,11 +68,10 @@
       ansible.builtin.assert:
         that:
           - fpr in docker_gpg.stdout
+      when:
       loop: "{{ docker_gpg_fingerprints }}"
       loop_control:
-        extended: true
         loop_var: fpr
-        label: "fingerprint {{ ansible_loop.index }}"
 
     - name: Docker apt repo available
       ansible.builtin.template:
@@ -127,6 +80,7 @@
         mode: 0644
         owner: root
         group: root
+      register: docker_sources
 
     - name: Docker apt preferences present
       ansible.builtin.template:
@@ -135,40 +89,14 @@
         mode: 0644
         owner: root
         group: root
+      register: docker_preferences
 
-    - name: Docker CE present
+    - name: Update apt cache
       ansible.builtin.apt:
-        pkg:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
-        state: present
         update_cache: true
-
-    - name: Directory for Docker config present
-      ansible.builtin.file:
-        path: /etc/docker
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
-
-    - name: Docker configuration present
-      ansible.builtin.template:
-        src: templates/daemon.json.j2
-        dest: /etc/docker/daemon.json
-        owner: root
-        group: root
-        mode: 0644
-      when: ( docker_nameservers is defined ) and ( docker_nameservers != [] )
-      notify: Restart docker
-
-    - name: Docker started
-      ansible.builtin.service:
-        name: docker
-        enabled: true
-        state: started
+      when: ( docker_sources.changed | bool ) or ( docker_preferences.changed | bool )
 
   tags:
     - docker
+    - docker_apt
 ...

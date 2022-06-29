@@ -1,0 +1,70 @@
+---
+- name: Install Docker
+  block:
+
+    - name: Requirements present
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-docker
+          - software-properties-common
+        state: present
+
+    - name: Python 2 package present
+      ansible.builtin.apt:
+        pkg:
+          - python-docker
+        state: present
+        update_cache: false
+      when: ansible_distribution_release is regex('^stretch|buster$')
+
+    - name: Legacy Docker packages absent
+      ansible.builtin.apt:
+        pkg:
+          - containerd
+          - docker
+          - docker-engine
+          - docker.io
+          - runc
+        autoclean: true
+        autoremove: true
+        state: absent
+
+    - name: Docker packages present
+      ansible.builtin.apt:
+        pkg: "{{ docker_pkg }}"
+        state: present
+        update_cache: true
+
+    - name: Directory for Docker config present
+      ansible.builtin.file:
+        path: /etc/docker
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Docker configuration present
+      ansible.builtin.template:
+        src: templates/daemon.json.j2
+        dest: /etc/docker/daemon.json
+        owner: root
+        group: root
+        mode: 0644
+      when: ( docker_nameservers is defined ) and ( docker_nameservers != [] )
+      notify: Restart docker
+
+    - name: Docker started
+      ansible.builtin.service:
+        name: docker
+        enabled: true
+        state: started
+
+  tags:
+    - docker
+    - docker_install
+...

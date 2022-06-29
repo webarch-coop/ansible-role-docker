@@ -1,26 +1,30 @@
 ---
-- name: Include local facts tasks
-  ansible.builtin.include_tasks: local_facts.yml
-  when: ansible_local.dpkg_arch is not defined
-  tags:
-    - docker
-    - docker-compose
+- name: Install Docker
+  block:
 
-- name: Include install Docker tasks
-  ansible.builtin.include_tasks: docker.yml
+    - name: Include Docker local facts tasks
+      ansible.builtin.include_tasks: local_facts.yml
+      when: ansible_local.dpkg_arch is not defined
+      tags:
+        - docker_local_facts
+
+    - name: Include Docker apt tasks
+      ansible.builtin.include_tasks: apt.yml
+      tags:
+        - docker_apt
+
+    - name: Include Docker install and configure tasks
+      ansible.builtin.include_tasks: install.yml
+      tags:
+        - docker_install
+
+    - name: Include install Docker Compose version 1 tasks
+      ansible.builtin.include_tasks: compose_v1.yml
+      when: docker_compose_v1 is defined
+      tags:
+        - docker_compose_v1
+
   when: ( docker is defined ) and ( docker | bool )
   tags:
     - docker
-
-- name: Include install Docker Compose tasks
-  ansible.builtin.include_tasks: compose.yml
-  when: ( docker_compose is defined ) and ( docker_compose | bool )
-  tags:
-    - docker-compose
-
-- name: Include install Docker Compose version 1 tasks
-  ansible.builtin.include_tasks: compose_v1.yml
-  when: ( docker_compose_v1 is defined ) and ( docker_compose_v1 | bool )
-  tags:
-    - docker-compose
 ...

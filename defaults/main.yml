@@ -1,9 +1,15 @@
 ---
 docker: true
-docker_compose: true
-docker_compose_v1: false
+# docker_compose_v1: false
 docker_compose_version_v1: 1.29.2
 docker_daemon:
   storage-driver: overlay2
   log-driver: syslog
+docker_pkg:
+  - containerd.io
+  - docker-ce
+  - docker-ce-cli
+  - docker-ce-rootless-extras
+  - docker-compose-plugin
+  # - docker-scan-plugin
 ...

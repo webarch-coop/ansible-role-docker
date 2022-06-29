@@ -42,4 +42,5 @@
 
   tags:
     - docker
+    - docker_local_facts
 ...
