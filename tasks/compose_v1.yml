@@ -20,6 +20,14 @@
       loop_control:
         loop_var: path
 
+    - name: Remove Docker Compose alternatives 
+      command: "{{ cmd }}"
+      loop:
+        - update-alternatives --remove docker-compose /usr/local/bin/docker-compose
+        - update-alternatives --remove docker-compose /usr/local/bin/compose-switch
+      loop_control:
+        loop_var: cmd
+
   when: ( docker_compose_v1 is defined ) and ( not docker_compose_v1 | bool )
   tags:
     - docker
