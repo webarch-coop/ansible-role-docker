@@ -20,7 +20,7 @@
       loop_control:
         loop_var: path
 
-    - name: Remove Docker Compose alternatives 
+    - name: Remove Docker Compose alternatives
       command: "{{ cmd }}"
       loop:
         - update-alternatives --remove docker-compose /usr/local/bin/docker-compose
