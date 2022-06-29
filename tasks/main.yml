@@ -6,6 +6,9 @@
       ansible.builtin.include_tasks: local_facts.yml
       when: ansible_local.dpkg_arch is not defined
       tags:
+        - docker_apt
+        - docker_compose_v1
+        - docker_install
         - docker_local_facts
 
     - name: Include Docker apt tasks

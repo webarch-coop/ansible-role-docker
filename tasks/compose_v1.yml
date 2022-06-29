@@ -148,15 +148,9 @@
       ansible.builtin.set_fact:
         docker_compose_switch_latest: "{{ docker_compose_switch_headers.location | urlsplit('path') | basename }}"
 
-    - name: Get the dpkg architecture
-      ansible.builtin.command: dpkg --print-architecture
-      check_mode: false
-      changed_when: false
-      register: docker_compose_architecture
-
     - name: Docker Compose Switch present
       ansible.builtin.get_url:
-        url: "https://github.com/docker/compose-switch/releases/download/{{ docker_compose_switch_latest }}/docker-compose-linux-{{ docker_compose_architecture.stdout }}"
+        url: "https://github.com/docker/compose-switch/releases/download/{{ docker_compose_switch_latest }}/docker-compose-linux-{{ ansible_facts.ansible_local.dpkg_arch.arch }}"
         dest: /usr/local/bin/compose-switch
         force: true
         owner: root
