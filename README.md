@@ -71,6 +71,8 @@ docker_daemon:
     - 9.9.9.9
 ```
 
+The role has uses `.sources` rather than `.list` files for `apt` and it also checks the `gpg` public key used to sign packages and limits what packages can be installed from the Docker repo.
+
 The primary URL of this repo is [`https://git.coop/webarch/docker`](https://git.coop/webarch/docker) however it is also [mirrored to GitHub](https://github.com/webarch-coop/ansible-role-docker) and [available via Ansible Galaxy](https://galaxy.ansible.com/chriscroome/docker).
 
 If you use this role please use a tagged release, see [the release notes](https://git.coop/webarch/docker/-/releases).
