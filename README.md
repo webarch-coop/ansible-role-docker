@@ -11,7 +11,6 @@ See the [defaults/main.yml](defaults/main.yml) for the default settings and [var
 
 <table>
   <thead>
-    <caption>Default settings</caption>
     <tr>
       <th>Variable name</th>
       <th>Default value</th>
@@ -20,40 +19,40 @@ See the [defaults/main.yml](defaults/main.yml) for the default settings and [var
   </thead>
   <tbody>
     <tr>
-      <td>`docker`</td>
-      <td>`true`</td>
+      <td><code>docker</code></td>
+      <td><code>true</code></td>
       <td>Set to false for the tasks in this role to be skipped</td>
     </tr>
     <tr>
-      <td>`docker_compose_v1`</td>
+      <td><code>docker_compose_v1</code></td>
       <td>UNDEFINED</td>
-      <td>Set to `false` for Docker Composer version 1 to be removed and set to `true` for `docker-compose` version 1 and `docker-compose-switch` to be installed</td>
+      <td>Set to <code>false</code> for Docker Composer version 1 to be removed and set to <code>true</code> for <code>docker-compose</code> version 1 and <code>docker-compose-switch</code> to be installed</td>
     </tr>
     <tr>
-      <td>`docker_compose_version_v1`</td>
-      <td>`1.29.2`</td>
-      <td>The version number of `docker-compose` version 1 to be installed</td>
+      <td><code>docker_compose_version_v1</code></td>
+      <td><code>1.29.2</code></td>
+      <td>The version number of <code>docker-compose</code> version 1 to be installed</td>
     </tr>
     <tr>
-      <td>`docker_daemon`</td>
+      <td><code>docker_daemon</code></td>
       <td>
-```yaml
+<pre>
   storage-driver: overlay2
   log-driver: syslog
-```
+</pre>
       </td>
-      <td>Docker daemon configuration, YAML that will converted to JSON and written to `/etc/docker/daemon.json`</td>
+      <td>Docker daemon configuration, YAML that will converted to JSON and written to <code>/etc/docker/daemon.json</code></td>
     </tr>
     <tr>
-      <td>`docker_pkg`</td>
+      <td><code>docker_pkg</code></td>
       <td>
-```yaml
+<pre>
   - containerd.io
   - docker-ce
   - docker-ce-cli
   - docker-ce-rootless-extras
   - docker-compose-plugin
-```
+</pre>
       </td>
       <td>Packages to be installed from the Docker apt repo</td>
     </tr>
