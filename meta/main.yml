@@ -15,9 +15,9 @@ galaxy_info:
         - stretch
     - name: ubuntu
       versions:
+        # - jammy
         - focal
         - bionic
-        - xenial
   galaxy_tags:
     - debian
     - docker
