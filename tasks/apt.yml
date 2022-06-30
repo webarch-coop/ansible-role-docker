@@ -34,44 +34,60 @@
         mode: 0644
         owner: root
         group: root
-      register: docker_gpg_asc_file
+      register: docker_tmp_asc_file
 
-    - name: Stat Docker gpg asc file
+    - name: Stat Docker ascii armored gpg file
       ansible.builtin.stat:
-        path: /etc/apt/keyrings/docker.gpg
-      register: docker_gpg_file
+        path: /root/docker.asc
+      register: docker_asc_file
 
-    - name: Docker gpg key dearmored
-      ansible.builtin.shell: |
-        set -e -o pipefail
-        gpg --dearmor < /root/docker.asc > /etc/apt/keyrings/docker.gpg
-      args:
-        executable: "{% if ansible_distribution == 'Ubuntu' %}/usr/bin/bash{% elif ansible_distribution == 'Debian' %}/bin/bash{% endif %}"
-      when: ( docker_gpg_asc_file.changed | bool ) or ( not docker_gpg_file.stat.exists | bool )
+    - name: Check the Docker gpg key when it exists
+      block:
 
-    - name: Docker gpg key check command
-      ansible.builtin.command: >
-        gpg --with-colons
-        {% if ansible_distribution == "Ubuntu" and ansible_distribution_version is version('18.04', '<=') %}
-        --with-fingerprint --with-subkey-fingerprint
-        {% elif ansible_distribution == "Debian" and ansible_distribution_version is version('10.0', '<') %}
-        --with-fingerprint --with-subkey-fingerprint
-        {% else %}
-        --show-keys
-        {% endif %}
-        /etc/apt/keyrings/docker.gpg
-      check_mode: false
-      changed_when: false
-      register: docker_gpg
+        - name: Stat Docker gpg dearmored file
+          ansible.builtin.stat:
+            path: /etc/apt/keyrings/docker.gpg
+          register: docker_gpg_file
 
-    - name: Docker gpg key checked
-      ansible.builtin.assert:
-        that:
-          - fpr in docker_gpg.stdout
-      when:
-      loop: "{{ docker_gpg_fingerprints }}"
-      loop_control:
-        loop_var: fpr
+        - name: Docker gpg key dearmored
+          ansible.builtin.shell: |
+            set -e -o pipefail
+            gpg --dearmor < /root/docker.asc > /etc/apt/keyrings/docker.gpg
+          args:
+            executable: "{% if ansible_distribution == 'Ubuntu' %}/usr/bin/bash{% elif ansible_distribution == 'Debian' %}/bin/bash{% endif %}"
+          when: ( docker_tmp_asc_file.changed | bool ) or ( not docker_gpg_file.stat.exists | bool )
+
+        - name: Stat Docker gpg dearmored file
+          ansible.builtin.stat:
+            path: /etc/apt/keyrings/docker.gpg
+          register: docker_gpg_file
+
+        - name: Docker gpg key check command
+          ansible.builtin.command: >
+            gpg --with-colons
+            {% if ansible_distribution == "Ubuntu" and ansible_distribution_version is version('18.04', '<=') %}
+            --with-fingerprint --with-subkey-fingerprint
+            {% elif ansible_distribution == "Debian" and ansible_distribution_version is version('10.0', '<') %}
+            --with-fingerprint --with-subkey-fingerprint
+            {% else %}
+            --show-keys
+            {% endif %}
+            /etc/apt/keyrings/docker.gpg
+          when: docker_gpg_file.stat.exists | bool
+          check_mode: false
+          changed_when: false
+          register: docker_gpg
+
+        - name: Docker gpg key checked
+          ansible.builtin.assert:
+            that:
+              - fpr in docker_gpg.stdout
+          when:
+          loop: "{{ docker_gpg_fingerprints }}"
+          loop_control:
+            loop_var: fpr
+
+      when: docker_asc_file.stat.exists | bool
 
     - name: Docker apt repo available
       ansible.builtin.template:
