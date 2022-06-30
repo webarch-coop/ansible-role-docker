@@ -67,7 +67,7 @@
             gpg --with-colons
             {% if ansible_distribution == "Ubuntu" and ansible_distribution_version is version('18.04', '<=') %}
             --with-fingerprint --with-subkey-fingerprint
-            {% elif ansible_distribution == "Debian" and ansible_distribution_version is version('10.0', '<') %}
+            {% elif ansible_distribution == "Debian" and ansible_distribution_version is version('10', '<') %}
             --with-fingerprint --with-subkey-fingerprint
             {% else %}
             --show-keys
