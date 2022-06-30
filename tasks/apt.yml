@@ -78,11 +78,37 @@
           changed_when: false
           register: docker_gpg
 
-        - name: Docker gpg key checked
+        - name: Docker gpg key check first fingerprint on Debian 10 and older
           ansible.builtin.assert:
             that:
               - fpr in docker_gpg.stdout
           when:
+            - ( ansible_loop.first | bool )
+            - ( ansible_distribution == "Debian" ) and ( ansible_distribution_version is version('10', '<') )
+          loop: "{{ docker_gpg_fingerprints }}"
+          loop_control:
+            extended: true
+            loop_var: fpr
+
+        - name: Docker gpg key check first fingerprint on Ubuntu 18.04 and older
+          ansible.builtin.assert:
+            that:
+              - fpr in docker_gpg.stdout
+          when:
+            - ( ansible_loop.first | bool )
+            - ( ansible_distribution == "Ubuntu" ) and ( ansible_distribution_version is version('18.04', '<=') )
+          loop: "{{ docker_gpg_fingerprints }}"
+          loop_control:
+            extended: true
+            loop_var: fpr
+
+        - name: Docker gpg key check all fingerprints
+          ansible.builtin.assert:
+            that:
+              - fpr in docker_gpg.stdout
+          when: >
+            ( ( ansible_distribution == "Debian" ) and ( ansible_distribution_version is version('10', '>=') ) ) or
+            ( ( ansible_distribution == "Ubuntu" ) and ( ansible_distribution_version is version('18.04', '>') ) )
           loop: "{{ docker_gpg_fingerprints }}"
           loop_control:
             loop_var: fpr
