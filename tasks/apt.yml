@@ -2,16 +2,28 @@
 - name: Configure Docker apt repo
   block:
 
-    - name: Legacy Docker apt sources list absent
-      ansible.builtin.file:
-        path: "{{ apt_list }}"
-        state: absent
-      loop:
-        - /etc/apt/sources.list.d/download_docker_com_linux_debian.list
-        - /etc/apt/sources.list.d/docker.list
+    - name: Find legacy Docker apt list files
+      ansible.builtin.find:
+        paths: /etc/apt/sources.list.d
+        patterns: "*docker*.list"
+      register: docker_old_apt_list_files
+
+    - name: List legacy Docker apt list files to be disabled
+      ansible.builtin.debug:
+        msg: "apt list file {{ file.path }} to be moved to {{ file.path }}.ansible.save"
+      loop: "{{ docker_old_apt_list_files.files }}"
       loop_control:
-        loop_var: apt_list
-        label: "{{ apt_list | basename }}"
+        loop_var: file
+        label: "{{ file.path | basename }}"
+      when: ( docker_old_apt_list_files.matched >= 1 )
+
+    - name: Disable legacy Docker apt list files
+      command: "mv {{ file.path }} {{ file.path }}.ansible.save"
+      loop: "{{ docker_old_apt_list_files.files }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file.path | basename }}"
+      when: ( docker_old_apt_list_files.matched >= 1 )
 
     - name: Legacy Docker GPG key absent
       ansible.builtin.apt_key:
@@ -41,20 +53,20 @@
         path: /root/docker.asc
       register: docker_asc_file
 
+    - name: Stat Docker gpg dearmored file
+      ansible.builtin.stat:
+        path: /etc/apt/keyrings/docker.gpg
+      register: docker_gpg_file
+
     - name: Check the Docker gpg key when it exists
       block:
-
-        - name: Stat Docker gpg dearmored file
-          ansible.builtin.stat:
-            path: /etc/apt/keyrings/docker.gpg
-          register: docker_gpg_file
 
         - name: Docker gpg key dearmored
           ansible.builtin.shell: |
             set -e -o pipefail
             gpg --dearmor < /root/docker.asc > /etc/apt/keyrings/docker.gpg
           args:
-            executable: "{% if ansible_distribution == 'Ubuntu' %}/usr/bin/bash{% elif ansible_distribution == 'Debian' %}/bin/bash{% endif %}"
+            executable: "{{ ansible_local.bash.path }}"
           when: ( docker_tmp_asc_file.changed | bool ) or ( not docker_gpg_file.stat.exists | bool )
 
         - name: Stat Docker gpg dearmored file
@@ -65,9 +77,7 @@
         - name: Docker gpg key check command
           ansible.builtin.command: >
             gpg --with-colons
-            {% if ansible_distribution == "Ubuntu" and ansible_distribution_version is version('18.04', '<=') %}
-            --with-fingerprint --with-subkey-fingerprint
-            {% elif ansible_distribution == "Debian" and ansible_distribution_version is version('10', '<') %}
+            {% if ansible_local.gpg.version is version('2.2.12', '<') %}
             --with-fingerprint --with-subkey-fingerprint
             {% else %}
             --show-keys
@@ -78,40 +88,22 @@
           changed_when: false
           register: docker_gpg
 
-        - name: Docker gpg key check first fingerprint on Debian 10 and older
-          ansible.builtin.assert:
-            that:
-              - fpr in docker_gpg.stdout
-          when:
-            - ( ansible_loop.first | bool )
-            - ( ansible_distribution == "Debian" ) and ( ansible_distribution_version is version('10', '<') )
-          loop: "{{ docker_gpg_fingerprints }}"
-          loop_control:
-            extended: true
-            loop_var: fpr
+        - name: Set a fact for the GPG fingerprints
+          ansible.builtin.set_fact:
+            docker_gpg_fingerprints_found: "{{ docker_gpg.stdout | community.general.jc('gpg') | community.general.json_query('[?type==`fpr`].user_id') | list }}"
 
-        - name: Docker gpg key check first fingerprint on Ubuntu 18.04 and older
+        - name: Docker gpg key check first fingerprint for GPG versions less that 2.2.12
           ansible.builtin.assert:
             that:
-              - fpr in docker_gpg.stdout
+              - docker_gpg_fingerprints[0] == docker_gpg_fingerprints_found
           when:
-            - ( ansible_loop.first | bool )
-            - ( ansible_distribution == "Ubuntu" ) and ( ansible_distribution_version is version('18.04', '<=') )
-          loop: "{{ docker_gpg_fingerprints }}"
-          loop_control:
-            extended: true
-            loop_var: fpr
+            - ( ansible_local.gpg.version is version('2.2.12', '<') )
 
         - name: Docker gpg key check all fingerprints
           ansible.builtin.assert:
             that:
-              - fpr in docker_gpg.stdout
-          when: >
-            ( ( ansible_distribution == "Debian" ) and ( ansible_distribution_version is version('10', '>=') ) ) or
-            ( ( ansible_distribution == "Ubuntu" ) and ( ansible_distribution_version is version('18.04', '>') ) )
-          loop: "{{ docker_gpg_fingerprints }}"
-          loop_control:
-            loop_var: fpr
+              - docker_gpg_fingerprints == docker_gpg_fingerprints_found
+          when: ( ansible_local.gpg.version is version('2.2.12', '>=') )
 
       when: docker_asc_file.stat.exists | bool
 
