@@ -20,6 +20,13 @@
       loop_control:
         loop_var: path
 
+    - name: Check if a docker-compose alternative exists
+      ansible.builtin.command: update-alternatives --query docker-compose
+      check_mode: false
+      changed_when: false
+      register: docker_compose_alternatives_query
+      failed_when: docker_compose_alternatives_query.rc in not regex('^0|2')
+
     - name: Remove Docker Compose alternatives
       ansible.builtin.command: "{{ cmd }}"
       loop:
@@ -27,6 +34,7 @@
         - update-alternatives --remove docker-compose /usr/local/bin/compose-switch
       loop_control:
         loop_var: cmd
+      when: docker_compose_alternatives_query.rc == 0
 
   when: ( docker_compose_v1 is defined ) and ( not docker_compose_v1 | bool )
   tags:
