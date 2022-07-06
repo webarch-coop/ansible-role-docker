@@ -4,7 +4,10 @@
 
     - name: Include Docker local facts tasks
       ansible.builtin.include_tasks: local_facts.yml
-      when: ansible_local.dpkg_arch is not defined
+      when: >
+        ( ansible_local.dpkg.arch is not defined ) or
+        ( ansible_local.gpg.version is not defined ) or
+        ( ansible_local.bash.path is not defined )
       tags:
         - docker_apt
         - docker_compose_v1
