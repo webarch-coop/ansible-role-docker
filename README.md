@@ -70,7 +70,7 @@ docker_daemon:
     - 9.9.9.9
 ```
 
-The role uses `.sources` rather than `.list` files for `apt`, see the Debian wiki page with [instructions to connect to a third-party repository](https://wiki.debian.org/DebianRepository/UseThirdParty) and it also checks the `gpg` public key used to sign packages and limits what packages can be installed from the Docker repo.
+The role uses `.sources` rather than `.list` files for `apt` and it also checks the `gpg` public key used to sign packages against the [vars/main.yml](variables set int his role) and limits what packages can be installed from the Docker repo, based on the Debian wiki page with [instructions to connect to a third-party repository](https://wiki.debian.org/DebianRepository/UseThirdParty).
 
 This role requires [jc](https://github.com/kellyjonbrazil/jc) version `1.20.2` or later to be installed on the Ansible controller using `pip` for the parsing of GPG command output, `jc` can be [installed using Ansible](https://git.coop/webarch/jc/), or simply run:
 
