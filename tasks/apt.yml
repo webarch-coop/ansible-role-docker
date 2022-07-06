@@ -96,14 +96,13 @@
           ansible.builtin.assert:
             that:
               - docker_gpg_fingerprints[0] == docker_gpg_fingerprints_found
-          when:
-            - ( ansible_local.gpg.version is version('2.2.12', '<') )
+          # when: ansible_local.gpg.version is version('2.2.12', '<')
 
         - name: Docker gpg key check all fingerprints
           ansible.builtin.assert:
             that:
               - docker_gpg_fingerprints == docker_gpg_fingerprints_found
-          when: ( ansible_local.gpg.version is version('2.2.12', '>=') )
+          when: ansible_local.gpg.version is version('2.2.12', '>=')
 
       when: docker_asc_file.stat.exists | bool
 
