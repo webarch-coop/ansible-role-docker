@@ -1,6 +1,7 @@
 ---
-# The path to dpkg
-docker_dpkg: /usr/bin/dpkg
+# Paths for local_facts scripts
+apt_dpkg: /usr/bin/dpkg
+apt_gpg: /usr/bin/gpg
 
 # ASCII armored GPG public key URL linked from
 # https://docs.docker.com/engine/install/debian/
