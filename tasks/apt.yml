@@ -92,10 +92,18 @@
           ansible.builtin.set_fact:
             docker_gpg_fingerprints_found: "{{ docker_gpg.stdout | community.general.jc('gpg') | community.general.json_query('[?type==`fpr`].user_id') | list }}"
 
+        - name: Debug vars
+          debug:
+            var: docker_gpg_fingerprints_found
+
+        - name: Debug vars
+          debug:
+            var: docker_gpg_fingerprints[0]
+
         - name: Docker gpg key check first fingerprint for GPG versions less that 2.2.12
           ansible.builtin.assert:
             that:
-              - docker_gpg_fingerprints[0] == docker_gpg_fingerprints_found
+              - docker_gpg_fingerprints_found == docker_gpg_fingerprints[0]
           # when: ansible_local.gpg.version is version('2.2.12', '<')
 
         - name: Docker gpg key check all fingerprints
