@@ -25,7 +25,7 @@
       check_mode: false
       changed_when: false
       register: docker_compose_alternatives_query
-      failed_when: docker_compose_alternatives_query.rc in not regex('^0|2')
+      failed_when: docker_compose_alternatives_query.rc is not regex('^0|2')
 
     - name: Remove Docker Compose alternatives
       ansible.builtin.command: "{{ cmd }}"

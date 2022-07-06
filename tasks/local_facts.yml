@@ -58,6 +58,6 @@
         verbosity: 2
 
   tags:
-    - docker 
+    - docker
     - docker_local_facts
 ...
