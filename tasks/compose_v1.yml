@@ -21,7 +21,7 @@
         loop_var: path
 
     - name: Remove Docker Compose alternatives
-      command: "{{ cmd }}"
+      ansible.builtin.command: "{{ cmd }}"
       loop:
         - update-alternatives --remove docker-compose /usr/local/bin/docker-compose
         - update-alternatives --remove docker-compose /usr/local/bin/compose-switch
@@ -150,7 +150,7 @@
 
     - name: Docker Compose Switch present
       ansible.builtin.get_url:
-        url: "https://github.com/docker/compose-switch/releases/download/{{ docker_compose_switch_latest }}/docker-compose-linux-{{ ansible_facts.ansible_local.dpkg_arch.arch }}"
+        url: "https://github.com/docker/compose-switch/releases/download/{{ docker_compose_switch_latest }}/docker-compose-linux-{{ ansible_facts.ansible_local.dpkg.arch }}"
         dest: /usr/local/bin/compose-switch
         force: true
         owner: root
