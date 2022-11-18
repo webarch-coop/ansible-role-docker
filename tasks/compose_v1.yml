@@ -174,13 +174,25 @@
       register: docker_compose_alternatives_existing
       failed_when: docker_compose_alternatives_existing.rc is not regex('^0|2$')
 
+    - name: Stat /usr/local/bin/docker-compose-v1
+      ansible.builtin.stat:
+        path: /usr/local/bin/docker-compose-v1
+      register: docker_compose_v1_state
+
     - name: Set docker-compose-v1 alternative for docker-compose
       community.general.alternatives:
         name: docker-compose
         link: /usr/local/bin/docker-compose
         path: /usr/local/bin/docker-compose-v1
         priority: 1
-      when: ( "/usr/local/bin/docker-compose-v1 - priority 1" not in docker_compose_alternatives_existing.stdout_lines ) or ( docker_compose_alternatives_existing.rc != 0 )
+      when:
+        - docker_compose_v1_state.stat.exists | bool
+        - ( "/usr/local/bin/docker-compose-v1 - priority 1" not in docker_compose_alternatives_existing.stdout_lines ) or ( docker_compose_alternatives_existing.rc != 0 )
+
+    - name: Stat /usr/local/bin/docker-switch
+      ansible.builtin.stat:
+        path: /usr/local/bin/docker-compose-v1
+      register: docker_compose_switch_state
 
     - name: Set compose-switch alternative for docker-compose
       community.general.alternatives:
@@ -188,7 +200,9 @@
         link: /usr/local/bin/docker-compose
         path: /usr/local/bin/compose-switch
         priority: 99
-      when: ( "/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines ) or ( docker_compose_alternatives_existing.rc != 0 )
+      when:
+        - docker_compose_switch_state.stat.exists | bool
+        - ( "/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines ) or ( docker_compose_alternatives_existing.rc != 0 )
 
     - name: Check compose-switch is working for docker-compose
       ansible.builtin.command: docker-compose --ansi=never version
@@ -196,6 +210,9 @@
       changed_when: false
       register: docker_compose_switch_check
       failed_when: ( docker_compose_switch_check.rc != 0 ) or ( "Docker Compose version" not in docker_compose_switch_check.stdout )
+      when:
+        - docker_compose_v1_state.stat.exists | bool
+        - docker_compose_switch_state.stat.exists | bool
 
   when: ( docker_compose_v1 is defined ) and ( docker_compose_v1 | bool )
   tags:
