@@ -1,0 +1,28 @@
+---
+argument_specs:
+  main:
+    author: Chris Croome
+    description: Ansible Role to install Docker CE on Debian and Ubuntu.
+    short_description: The main entry point for the Docker role.
+    options:
+      docker:
+        type: bool
+        required: true
+        description: Run the tasks in this role.
+      docker_daemon:
+        type: dict
+        required: true
+        description: Docker daemon configuration, YAML that will converted to JSON and written to `/etc/docker/daemon.json`.
+      docker_compose_v1:
+        type: bool
+        required: false
+        description: Set to `false` for Docker Composer version 1 to be removed and set to `true` for `docker-compose` version 1 and `docker-compose-switch` to be installed.
+      docker_compose_version_v1:
+        type: str
+        required: true
+        description: The version number of `docker-compose` version 1 to be installed when `docker_compose_v1` is defined and `true`.
+      docker_pkg:
+        type: list
+        equired: true
+        description: Packages to be installed from the Docker apt repo.
+...
