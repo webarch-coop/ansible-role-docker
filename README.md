@@ -9,7 +9,6 @@ This role can also optionally install the last version of `docker-compose` versi
 See the [defaults/main.yml](defaults/main.yml) for the default settings and [vars/main.yml](vars/main.yml) for the `gpg` and `apt` variables.
 
 <table>
-  <caption>Default Variables</caption>
   <thead>
     <tr>
       <th>Variable name</th>
