@@ -20,7 +20,7 @@ See the [defaults/main.yml](defaults/main.yml) for the default settings and [var
     <tr>
       <td><code>docker</code></td>
       <td><code>true</code></td>
-      <td>Set to `false` for the tasks in this role to be skipped</td>
+      <td>Set to <code>false</code> for the tasks in this role to be skipped</td>
     </tr>
     <tr>
       <td><code>docker_compose_v1</code></td>
@@ -30,7 +30,7 @@ See the [defaults/main.yml](defaults/main.yml) for the default settings and [var
     <tr>
       <td><code>docker_compose_version_v1</code></td>
       <td><code>1.29.2</code></td>
-      <td>The version number of <code>docker-compose</code> version 1 to be installed when `docker_compose_v1` is defined and `true`</td>
+      <td>The version number of <code>docker-compose</code> version 1 to be installed when <code>docker_compose_v1</code> is defined and <code>true</code></td>
     </tr>
     <tr>
       <td><code>docker_daemon</code></td>
