@@ -18,7 +18,7 @@
       when: ( docker_old_apt_list_files.matched >= 1 )
 
     - name: Disable legacy Docker apt list files
-      command: "mv {{ file.path }} {{ file.path }}.ansible.save"
+      ansible.builtin.command: "mv {{ file.path }} {{ file.path }}.ansible.save"
       loop: "{{ docker_old_apt_list_files.files }}"
       loop_control:
         loop_var: file
