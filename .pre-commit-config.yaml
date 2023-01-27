@@ -8,31 +8,11 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Docker Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-galaxy_info:
-  role_name: docker
-  author: Chris Croome
-  namespace: chriscroome
-  description: Ansible role for installing Docker CE on Debian and Ubuntu
-  company: Webarchitects Co-operative
-  license: GNU General Public License v3.0 (GPLv3)
-  min_ansible_version: "2.10.7"
-  platforms:
-    - name: debian
-      versions:
-        - bookworm
-        - bullseye
-        - buster
-        - stretch
-    - name: ubuntu
-      versions:
-        - jammy
-        - focal
-        - bionic
-  galaxy_tags:
-    - debian
-    - docker
-    - ubuntu
-dependencies: []
-# List your role dependencies here, one per line. Be sure to remove the '[]' above,
-# if you add dependencies to this list.
+# https://yamllint.readthedocs.io/en/stable/integration.html
+# https://github.com/adrienverge/yamllint/tags
+repos:
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.29.0
+    hooks:
+      - id: yamllint
 ...
