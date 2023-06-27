@@ -71,9 +71,10 @@
       block:
 
         - name: Docker gpg key dearmored
-          ansible.builtin.shell: |
+          ansible.builtin.shell: |-
             set -e -o pipefail
             gpg --dearmor < /root/docker.asc > /etc/apt/keyrings/docker.gpg
+            chmod 644 /etc/apt/keyrings/docker.gpg
           args:
             executable: "{{ ansible_local.bash.path }}"
           when: ( docker_tmp_asc_file.changed | bool ) or ( not docker_gpg_file.stat.exists | bool )
