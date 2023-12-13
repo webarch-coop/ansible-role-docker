@@ -8,20 +8,24 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Docker Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-dependency:
-  name: galaxy
-platforms:
-  - name: instance
-provisioner:
-  name: ansible
-    # host_vars:
-    #   instance:
-    #     ansible_user: ansible
-  options:
-    D: true
-verifier:
-  name: ansible
-    # host_vars:
-    #   instance:
-    #     ansible_user: ansible
+- name: Verify as root
+  # become: true
+  connection: local
+  # gather_facts: true
+  hosts:
+    - localhost
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+      register: molecule_service_facts
+
+    - name: Debug Docker service status
+      ansible.builtin.debug:
+        msg: "{{ molecule_service_facts | community.general.json_query(molecule_service_jpq) }}"
+        verbosity: 3
+      vars:
+        molecule_service_jpq: 'ansible_facts.services.["docker.service"]|[0]'
 ...

@@ -37,12 +37,13 @@
       failed_when: docker_compose_alternatives_query.rc is not regex('^0|2')
 
     - name: Remove Docker Compose alternatives
-      ansible.builtin.command: "{{ cmd }}"
+      ansible.builtin.command: "{{ docker_cmd }}"
+      changed_when: true
       loop:
         - update-alternatives --remove docker-compose /usr/local/bin/docker-compose
         - update-alternatives --remove docker-compose /usr/local/bin/compose-switch
       loop_control:
-        loop_var: cmd
+        loop_var: docker_cmd
       when: docker_compose_alternatives_query.rc == 0
 
   when: ( docker_compose_v1 is defined ) and ( not docker_compose_v1 | bool )

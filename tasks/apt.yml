@@ -28,6 +28,7 @@
 
     - name: Disable legacy Docker apt list files
       ansible.builtin.command: "mv {{ file.path }} {{ file.path }}.ansible.save"
+      changed_when: true
       loop: "{{ docker_old_apt_list_files.files }}"
       loop_control:
         loop_var: file
@@ -77,6 +78,7 @@
             chmod 644 /etc/apt/keyrings/docker.gpg
           args:
             executable: "{{ ansible_local.bash.path }}"
+          changed_when: false
           when: ( docker_tmp_asc_file.changed | bool ) or ( not docker_gpg_file.stat.exists | bool )
 
         - name: Stat Docker gpg dearmored file

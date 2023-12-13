@@ -32,6 +32,6 @@ argument_specs:
         description: The version number of `docker-compose` version 1 to be installed when `docker_compose_v1` is defined and `true`.
       docker_pkg:
         type: list
-        equired: true
+        required: true
         description: Packages to be installed from the Docker apt repo.
 ...
