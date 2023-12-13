@@ -25,7 +25,7 @@
     - name: Debug Docker service status
       ansible.builtin.debug:
         msg: "{{ molecule_service_facts | community.general.json_query(molecule_service_jpq) }}"
-        verbosity: 3
+        # verbosity: 3
       vars:
         molecule_service_jpq: 'ansible_facts.services.["docker.service"]|[0]'
 ...
