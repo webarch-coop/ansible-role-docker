@@ -4,7 +4,7 @@
 
 Ansible Role to install [Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/debian/) on Debian and Ubuntu.
 
-This role can also optionally install the last version of `docker-compose` version 1, [Docker Compose 1.29.2 ](https://github.com/docker/compose/tree/5becea4ca9f68875334c92f191a13482bcd6e5cf#docker-compose) and [Compose Switch](https://github.com/docker/compose-switch).
+This role can also optionally install the last version of `docker-compose` version 1, [Docker Compose 1.29.2](https://github.com/docker/compose/tree/5becea4ca9f68875334c92f191a13482bcd6e5cf#docker-compose) and [Compose Switch](https://github.com/docker/compose-switch).
 
 See the [defaults/main.yml](defaults/main.yml) for the default settings and [vars/main.yml](vars/main.yml) for the `gpg` and `apt` variables.
 
