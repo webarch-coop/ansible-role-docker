@@ -8,9 +8,9 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Docker Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-- name: Skip the tasks in this role as ans is false
+- name: Skip the tasks in this role as docker is false
   ansible.builtin.debug:
-    msg: "The ans variable need to be true for the tasks in this role to run."
+    msg: "The docker variable need to be true for the tasks in this role to run."
   when: >-
     ( docker is not defined ) or
     ( not docker | bool )
