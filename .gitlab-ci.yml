@@ -14,6 +14,7 @@ variables:
   ANSIBLE_FORCE_COLOR: "1"
   ANSIBLE_REMOTE_TMP: "/tmp"
   ANSIBLE_SHELL_ALLOW_WORLD_READABLE_TEMP: "1"
+  DEBIAN_FRONTEND: noninteractive
   DEFAULT_MANAGED_STR: "Ansible managed"
   MOLECULE_VERBOSITY: "0"
   PY_COLORS: "1"
@@ -33,24 +34,24 @@ stages:
   - jammy
   # - trixie
 bookworm:
-  image: registry.git.coop/webarch/containers/images/bookworm:20231213
+  image: registry.git.coop/webarch/containers/images/bookworm:20240105
   stage: bookworm
   script:
     - molecule test --all
 # The Bullseye test run OK but Molecule never completes
 # https://github.com/ansible/molecule/discussions/4020
 # bullseye:
-#   image: registry.git.coop/webarch/containers/images/bullseye:20231213
+#   image: registry.git.coop/webarch/containers/images/bullseye:20240105
 #   stage: bullseye
 #   script:
 #     - molecule test
 jammy:
-  image: registry.git.coop/webarch/containers/images/jammy:20231213
+  image: registry.git.coop/webarch/containers/images/jammy:20240105
   stage: jammy
   script:
     - molecule test
 # trixie:
-#   image: registry.git.coop/webarch/containers/images/trixie:20231213
+#   image: registry.git.coop/webarch/containers/images/trixie:20240105
 #   stage: trixie
 #   script:
 #     - molecule test

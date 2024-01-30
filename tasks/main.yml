@@ -58,6 +58,9 @@
       tags:
         - docker_compose_v1
 
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+
   when:
     - docker is defined
     - docker | bool
