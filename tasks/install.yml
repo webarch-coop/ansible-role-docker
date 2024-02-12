@@ -44,11 +44,17 @@
         state: absent
       notify: Restart docker
 
+    - name: Check that /etc/apt/sources.list.d/docker.sources is present
+      ansible.builtin.stat:
+        path: /etc/apt/sources.list.d/docker.sources
+      register: docker_apt_sources
+
     - name: Docker packages present
       ansible.builtin.apt:
         pkg: "{{ docker_pkg }}"
         state: present
         update_cache: true
+      when: docker_apt_sources.stat.exists | bool
       notify: Restart docker
 
     - name: Directory for Docker config present
@@ -76,6 +82,7 @@
         name: docker
         enabled: true
         state: started
+      when: docker_apt_sources.stat.exists | bool
 
   tags:
     - docker

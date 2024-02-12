@@ -86,36 +86,45 @@
             path: /etc/apt/keyrings/docker.gpg
           register: docker_gpg_file
 
-        - name: Docker gpg key check command
-          ansible.builtin.command: >
-            gpg --with-colons
-            {% if ansible_local.gpg.version is version('2.2.12', '<') %}
-            --with-fingerprint --with-subkey-fingerprint
-            {% else %}
-            --show-keys
-            {% endif %}
-            /etc/apt/keyrings/docker.gpg
+        - name: Check GPG keys
+          block:
+
+            - name: Docker gpg key check command
+              ansible.builtin.command: >
+                gpg --with-colons
+                {% if ansible_local.gpg.version is version('2.2.12', '<') %}
+                --with-fingerprint --with-subkey-fingerprint
+                {% else %}
+                --show-keys
+                {% endif %}
+                /etc/apt/keyrings/docker.gpg
+              check_mode: false
+              changed_when: false
+              register: docker_gpg
+
+            - name: Set a fact for the GPG fingerprints
+              ansible.builtin.set_fact:
+                docker_gpg_fingerprints_found: "{{ docker_gpg.stdout | string | community.general.jc('gpg') | community.general.json_query('[?type==`fpr`].user_id') | list }}"
+              when: docker_gpg is defined
+
+            - name: Docker gpg key check first fingerprint for GPG versions less that 2.2.12
+              ansible.builtin.assert:
+                that:
+                  - docker_gpg_fingerprints_found[0] == docker_gpg_fingerprints[0]
+              when:
+                - docker_gpg_fingerprints_found is defined
+                - ansible_local.gpg.version is version('2.2.12', '<')
+
+            - name: Docker gpg key check all fingerprints
+              ansible.builtin.assert:
+                that:
+                  - docker_gpg_fingerprints_found | difference(docker_gpg_fingerprints) | length == 0
+                  - docker_gpg_fingerprints | difference(docker_gpg_fingerprints_found) | length == 0
+              when:
+                - docker_gpg_fingerprints_found is defined
+                - ansible_local.gpg.version is version('2.2.12', '>=')
+
           when: docker_gpg_file.stat.exists | bool
-          check_mode: false
-          changed_when: false
-          register: docker_gpg
-
-        - name: Set a fact for the GPG fingerprints
-          ansible.builtin.set_fact:
-            docker_gpg_fingerprints_found: "{{ docker_gpg.stdout | community.general.jc('gpg') | community.general.json_query('[?type==`fpr`].user_id') | list }}"
-
-        - name: Docker gpg key check first fingerprint for GPG versions less that 2.2.12
-          ansible.builtin.assert:
-            that:
-              - docker_gpg_fingerprints_found[0] == docker_gpg_fingerprints[0]
-          when: ansible_local.gpg.version is version('2.2.12', '<')
-
-        - name: Docker gpg key check all fingerprints
-          ansible.builtin.assert:
-            that:
-              - docker_gpg_fingerprints_found | difference(docker_gpg_fingerprints) | length == 0
-              - docker_gpg_fingerprints | difference(docker_gpg_fingerprints_found) | length == 0
-          when: ansible_local.gpg.version is version('2.2.12', '>=')
 
       when: docker_asc_file.stat.exists | bool
 

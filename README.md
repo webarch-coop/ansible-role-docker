@@ -8,56 +8,6 @@ This role can also optionally install the last version of `docker-compose` versi
 
 See the [defaults/main.yml](defaults/main.yml) for the default settings and [vars/main.yml](vars/main.yml) for the `gpg` and `apt` variables.
 
-<table>
-  <thead>
-    <tr>
-      <th>Variable name</th>
-      <th>Default value</th>
-      <th>Comment</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>docker</code></td>
-      <td><code>true</code></td>
-      <td>Set to <code>false</code> for the tasks in this role to be skipped</td>
-    </tr>
-    <tr>
-      <td><code>docker_compose_v1</code></td>
-      <td>UNDEFINED</td>
-      <td>Set to <code>false</code> for Docker Composer version 1 to be removed and set to <code>true</code> for <code>docker-compose</code> version 1 and <code>docker-compose-switch</code> to be installed</td>
-    </tr>
-    <tr>
-      <td><code>docker_compose_version_v1</code></td>
-      <td><code>1.29.2</code></td>
-      <td>The version number of <code>docker-compose</code> version 1 to be installed when <code>docker_compose_v1</code> is defined and <code>true</code></td>
-    </tr>
-    <tr>
-      <td><code>docker_daemon</code></td>
-      <td>
-<pre>
-  storage-driver: overlay2
-  log-driver: syslog
-</pre>
-      </td>
-      <td>Docker daemon configuration, YAML that will converted to JSON and written to <code>/etc/docker/daemon.json</code></td>
-    </tr>
-    <tr>
-      <td><code>docker_pkg</code></td>
-      <td>
-<pre>
-  - containerd.io
-  - docker-ce
-  - docker-ce-cli
-  - docker-ce-rootless-extras
-  - docker-compose-plugin
-</pre>
-      </td>
-      <td>Packages to be installed from the Docker apt repo</td>
-    </tr>
-  </tbody>
-</table>
-
 See the [documentation for the Docker daemon config file](https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file) for all the options available and convert these to YAML for use by this role, for example:
 
 ```yml
