@@ -21,17 +21,38 @@ argument_specs:
       docker_daemon:
         type: dict
         required: true
-        description: Docker daemon configuration, YAML that will converted to JSON and written to `/etc/docker/daemon.json`.
+        description: Docker daemon configuration, YAML that will converted to JSON and written to /etc/docker/daemon.json.
       docker_compose_v1:
         type: bool
         required: false
-        description: Set to `false` for Docker Composer version 1 to be removed and set to `true` for `docker-compose` version 1 and `docker-compose-switch` to be installed.
+        description: Set to false for Docker Composer version 1 to be removed and set to true for docker-compose version 1 and docker-compose-switch to be installed.
       docker_compose_version_v1:
         type: str
         required: true
-        description: The version number of `docker-compose` version 1 to be installed when `docker_compose_v1` is defined and `true`.
+        description: The version number of docker-compose version 1 to be installed when docker_compose_v1 is defined and true.
+      docker_gpg_checksum:
+        type: str
+        required: true
+        description: The SHA256 checksum of the Docker GPG public key.
+      docker_gpg_fingerprints:
+        type: list
+        elements: str
+        required: true
+        description: A list of the Docker GPG public fingerprints.
+      docker_gpg_url:
+        type: str
+        required: true
+        description: URL for the Docker apt repo GPG public key.
       docker_pkg:
         type: list
         required: true
         description: Packages to be installed from the Docker apt repo.
+      docker_repo_pkg:
+        type: list
+        elements: str
+        description: A list of packages available from the Docker repo for apt pinning.
+      docker_verify:
+        type: bool
+        required: true
+        description: Check all variables that start with docker_ against the argument spec.
 ...

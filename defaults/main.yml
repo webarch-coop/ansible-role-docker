@@ -9,7 +9,7 @@
 # You should have received a copy of the GNU General Public License along with the Webarchitects Docker Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
 docker: false
-# docker_compose_v1: false
+docker_compose_v1: false
 docker_compose_version_v1: "1.29.2"
 docker_daemon:
   storage-driver: overlay2
@@ -21,4 +21,5 @@ docker_pkg:
   - docker-ce-rootless-extras
   - docker-compose-plugin
   # - docker-scan-plugin
+docker_verify: true
 ...

@@ -8,6 +8,10 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Docker Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
+# https://docs.ansible.com/ansible/latest/playbook_guide/complex_data_manipulation.html
+dockervarnames: "{{ q('varnames', '^docker_') | sort }}"
+dockerhostvars: "{{ dict(dockervarnames | list | zip(q('vars', *dockervarnames))) }}"
+
 # ASCII armored GPG public key URL linked from
 # https://docs.docker.com/engine/install/debian/
 docker_gpg_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
@@ -29,6 +33,7 @@ docker_gpg_fingerprints:
 # grep Package /var/lib/apt/lists/download.docker.com_*_Packages | sed 's/^Package: //' | uniq | sort | sed 's/^/  - /'
 docker_repo_pkg:
   - containerd.io
+  - docker-buildx-plugin
   - docker-ce
   - docker-ce-cli
   - docker-ce-rootless-extras

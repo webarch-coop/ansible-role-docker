@@ -13,4 +13,6 @@
     name: docker
     state: restarted
   listen: Restart docker
+  tags:
+    - docker
 ...
