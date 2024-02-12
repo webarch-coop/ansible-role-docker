@@ -20,7 +20,7 @@ argument_specs:
         description: Run the tasks in this role.
       docker_daemon:
         type: dict
-        required: true
+        required: false
         description: Docker daemon configuration, YAML that will converted to JSON and written to /etc/docker/daemon.json.
       docker_compose_v1:
         type: bool
