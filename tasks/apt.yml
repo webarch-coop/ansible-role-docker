@@ -124,18 +124,111 @@
                 - docker_gpg_fingerprints_found is defined
                 - ansible_local.gpg.version is version('2.2.12', '>=')
 
+            - name: Stat Docker repository sources file
+              ansible.builtin.stat:
+                path: /etc/apt/sources.list.d/docker.sources
+              register: docker_sources_path
+
+            - name: Read and backup PHP repository sources file
+              block:
+
+                - name: Slurp /etc/apt/sources.list.d/docker.sources
+                  ansible.builtin.slurp:
+                    src: /etc/apt/sources.list.d/docker.sources
+                  register: docker_sources_contents_b64encoded
+
+                - name: Decode the base64 encoded version of /etc/apt/sources.list.d/docker.sources
+                  ansible.builtin.set_fact:
+                    docker_sources_contents: "{{ docker_sources_contents_b64encoded['content'] | ansible.builtin.b64decode | string | community.general.jc('ini') }}"
+
+                - name: Print the contents of /etc/apt/sources.list.d/docker.sources
+                  ansible.builtin.debug:
+                    var: docker_sources_contents
+                    verbosity: "{% if ansible_check_mode | bool or ansible_diff_mode | bool %}1{% else %}2{% endif %}"
+
+                - name: Set a fact for the prior Docker repository sources file contents
+                  ansible.builtin.set_fact:
+                    docker_sources_contents_prior: "{{ docker_sources_contents }}"
+                  when: docker_sources_contents is defined
+
+                - name: Check Docker repository sources file present
+                  ansible.builtin.deb822_repository:
+                    allow_downgrade_to_insecure: false
+                    allow_insecure: false
+                    allow_weak: false
+                    architectures: "{{ ansible_facts.ansible_local.dpkg.arch }}"
+                    check_date: true
+                    check_valid_until: true
+                    components: stable
+                    enabled: true
+                    name: docker
+                    signed_by: /etc/apt/keyrings/docker.gpg
+                    suites: "{{ ansible_distribution_release }}"
+                    types: deb
+                    uris: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
+                  check_mode: true
+                  changed_when: false
+                  register: docker_sources_check
+
+                - name: Debug proposed docker_sources_check.repo
+                  ansible.builtin.debug:
+                    var: docker_sources_check.repo
+                    verbosity: "{% if ansible_check_mode | bool or ansible_diff_mode | bool %}1{% else %}2{% endif %}"
+
+                - name: Backup old docker.sources file
+                  ansible.builtin.command:
+                    cmd: >-
+                      mv
+                      /etc/apt/sources.list.d/docker.sources
+                      /etc/apt/sources.list.d/.docker.sources.{{ docker_date_timestamp }}.ansible.save
+                  args:
+                    creates: "/etc/apt/sources.list.d/.docker.sources.{{ docker_date_timestamp }}.ansible.save"
+                    removes: /etc/apt/sources.list.d/docker.sources
+                  vars:
+                    docker_date_timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
+                  when: docker_sources_contents_prior != docker_sources_check.repo | string | community.general.jc('ini')
+
+              when: docker_sources_path.stat.exists | bool
+
+            - name: Docker repository sources file present
+              ansible.builtin.deb822_repository:
+                allow_downgrade_to_insecure: false
+                allow_insecure: false
+                allow_weak: false
+                architectures: "{{ ansible_facts.ansible_local.dpkg.arch }}"
+                check_date: true
+                check_valid_until: true
+                components: stable
+                enabled: true
+                name: docker
+                signed_by: /etc/apt/keyrings/docker.gpg
+                suites: "{{ ansible_distribution_release }}"
+                types: deb
+                uris: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
+              register: docker_sources
+
+            - name: Print the changes in the Docker repository sources file  # noqa: no-handler
+              block:
+
+                - name: Debug updated docker_sources.repo
+                  ansible.builtin.debug:
+                    var: docker_sources.repo
+                    verbosity: "{% if ansible_check_mode | bool or ansible_diff_mode | bool %}1{% else %}2{% endif %}"
+
+                - name: Diff Docker repository sources file update
+                  ansible.utils.fact_diff:
+                    before: "{{ docker_sources_contents_prior | ansible.builtin.to_nice_yaml }}"
+                    after: "{{ docker_sources.repo | string | community.general.jc('ini') | ansible.builtin.to_nice_yaml }}"
+                  when:
+                    - ( ansible_check_mode | bool ) or ( ansible_diff_mode | bool )
+                    - docker_sources_contents_prior is defined
+                    - docker_sources.repo is defined
+
+              when: docker_sources.changed | bool
+
           when: docker_gpg_file.stat.exists | bool
 
       when: docker_asc_file.stat.exists | bool
-
-    - name: Docker apt repo available
-      ansible.builtin.template:
-        src: docker.sources.j2
-        dest: /etc/apt/sources.list.d/docker.sources
-        mode: "0644"
-        owner: root
-        group: root
-      register: docker_sources
 
     - name: Docker apt preferences present
       ansible.builtin.template:

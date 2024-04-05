@@ -25,7 +25,7 @@ repos:
           - templates
   # https://github.com/jackdewinter/pymarkdown/releases
   - repo: https://github.com/jackdewinter/pymarkdown.git
-    rev: v0.9.17
+    rev: v0.9.18
     hooks:
       - id: pymarkdown
         name: Markdown Lint
@@ -41,7 +41,7 @@ repos:
         language: python
         additional_dependencies:
           # https://github.com/kellyjonbrazil/jc/releases
-          - jc==1.25.1
+          - jc==1.25.2
           # https://github.com/jmespath/jmespath.py/tags
           - jmespath==1.0.1
 ...
