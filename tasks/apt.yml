@@ -129,7 +129,7 @@
                 path: /etc/apt/sources.list.d/docker.sources
               register: docker_sources_path
 
-            - name: Read and backup PHP repository sources file
+            - name: Read and backup Docker repository sources file
               block:
 
                 - name: Slurp /etc/apt/sources.list.d/docker.sources
