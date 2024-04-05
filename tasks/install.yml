@@ -19,17 +19,10 @@
           - curl
           - gnupg
           - lsb-release
+          - python3-debian
           - python3-docker
           - software-properties-common
         state: present
-
-    - name: Python 2 package present
-      ansible.builtin.apt:
-        pkg:
-          - python-docker
-        state: present
-        update_cache: false
-      when: ansible_distribution_release is regex('^stretch|buster$')
 
     - name: Legacy Docker packages absent
       ansible.builtin.apt:
