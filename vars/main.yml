@@ -14,7 +14,7 @@ dockerhostvars: "{{ dict(dockervarnames | list | zip(q('vars', *dockervarnames))
 
 # ASCII armored GPG public key URL linked from
 # https://docs.docker.com/engine/install/debian/
-docker_gpg_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+docker_gpg_url: "https://download.docker.com/linux/{{ ansible_facts.distribution | lower }}/gpg"
 
 # Get the sha256 checksum using the following command
 # wget -q https://download.docker.com/linux/debian/gpg -O - | sha256sum - | awk '{ print $1 }' | sed 's/^/"sha256:/' | sed 's/$/"/'

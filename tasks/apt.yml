@@ -77,7 +77,7 @@
             gpg --dearmor < /root/docker.asc > /etc/apt/keyrings/docker.gpg
             chmod 644 /etc/apt/keyrings/docker.gpg
           args:
-            executable: "{{ ansible_local.bash.path }}"
+            executable: "{{ ansible_facts.ansible_local.bash.path }}"
           changed_when: false
           when: ( docker_tmp_asc_file.changed | bool ) or ( not docker_gpg_file.stat.exists | bool )
 
@@ -92,7 +92,7 @@
             - name: Docker gpg key check command
               ansible.builtin.command: >
                 gpg --with-colons
-                {% if ansible_local.gpg.version is version('2.2.12', '<') %}
+                {% if ansible_facts.ansible_local.gpg.version is version('2.2.12', '<') %}
                 --with-fingerprint --with-subkey-fingerprint
                 {% else %}
                 --show-keys
@@ -113,7 +113,7 @@
                   - docker_gpg_fingerprints_found[0] == docker_gpg_fingerprints[0]
               when:
                 - docker_gpg_fingerprints_found is defined
-                - ansible_local.gpg.version is version('2.2.12', '<')
+                - ansible_facts.ansible_local.gpg.version is version('2.2.12', '<')
 
             - name: Docker gpg key check all fingerprints
               ansible.builtin.assert:
@@ -122,7 +122,7 @@
                   - docker_gpg_fingerprints | difference(docker_gpg_fingerprints_found) | length == 0
               when:
                 - docker_gpg_fingerprints_found is defined
-                - ansible_local.gpg.version is version('2.2.12', '>=')
+                - ansible_facts.ansible_local.gpg.version is version('2.2.12', '>=')
 
             - name: Stat Docker repository sources file
               ansible.builtin.stat:
@@ -163,9 +163,9 @@
                     enabled: true
                     name: docker
                     signed_by: /etc/apt/keyrings/docker.gpg
-                    suites: "{{ ansible_distribution_release }}"
+                    suites: "{{ ansible_facts.distribution_release }}"
                     types: deb
-                    uris: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
+                    uris: "https://download.docker.com/linux/{{ ansible_facts.distribution | lower }}"
                   check_mode: true
                   changed_when: false
                   register: docker_sources_check
@@ -185,7 +185,7 @@
                     creates: "/etc/apt/sources.list.d/.docker.sources.{{ docker_date_timestamp }}.ansible.save"
                     removes: /etc/apt/sources.list.d/docker.sources
                   vars:
-                    docker_date_timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
+                    docker_date_timestamp: "{{ ansible_facts.date_time.iso8601_basic_short }}"
                   when: docker_sources_contents_prior != docker_sources_check.repo | string | community.general.jc('ini')
 
               when: docker_sources_path.stat.exists | bool
@@ -202,9 +202,9 @@
                 enabled: true
                 name: docker
                 signed_by: /etc/apt/keyrings/docker.gpg
-                suites: "{{ ansible_distribution_release }}"
+                suites: "{{ ansible_facts.distribution_release }}"
                 types: deb
-                uris: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
+                uris: "https://download.docker.com/linux/{{ ansible_facts.distribution | lower }}"
               register: docker_sources
 
             - name: Print the changes in the Docker repository sources file  # noqa: no-handler
