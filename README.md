@@ -33,3 +33,9 @@ The primary URL of this repo is [`https://git.coop/webarch/docker`](https://git.
 If you use this role please use a tagged release, see [the release notes](https://git.coop/webarch/docker/-/releases).
 
 See also the [localhost repo](https://git.coop/webarch/localhost) for using this role to install Docker on the `localhost`.
+
+## Copyright
+
+Copyright 2018-2025 Chris Croome, &lt;[chris@webarchitects.co.uk](mailto:chris@webarchitects.co.uk)&gt;.
+
+This role is released under [the same terms as Ansible itself](https://github.com/ansible/ansible/blob/devel/COPYING), the [GNU GPLv3](LICENSE).
