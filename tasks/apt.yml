@@ -11,6 +11,20 @@
 - name: Configure Docker apt repo
   block:
 
+    - name: Requirements present
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-debian
+          - python3-docker
+          - software-properties-common
+        state: present
+        update_cache: true
+
     - name: Find legacy Docker apt list files
       ansible.builtin.find:
         paths: /etc/apt/sources.list.d
