@@ -13,7 +13,6 @@ variables:
   ANSIBLE_DEFAULT_VERBOSITY: "1"
   ANSIBLE_DIFF_ALWAYS: "1"
   ANSIBLE_DISPLAY_SKIPPED_HOSTS: "0"
-  ANSIBLE_ERROR_ON_UNDEFINED_VARS: "1"
   ANSIBLE_FORCE_COLOR: "1"
   ANSIBLE_INJECT_FACT_VARS: "0"
   ANSIBLE_NOCOWS: "1"
@@ -21,7 +20,6 @@ variables:
   ANSIBLE_ROLES_PATH: "${CI_PROJECT_DIR}/..:~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles"
   ANSIBLE_SHELL_ALLOW_WORLD_READABLE_TEMP: "1"
   DEBIAN_FRONTEND: "noninteractive"
-  DEFAULT_MANAGED_STR: "Ansible managed"
   MOLECULE_VERBOSITY: "0"
   PY_COLORS: "1"
 before_script:
@@ -36,37 +34,27 @@ before_script:
   - molecule --version
 stages:
   - bookworm
-  - jammy
   - noble
-  # - trixie
+  - trixie
 bookworm:
-  image: registry.git.coop/webarch/containers/images/bookworm:20250113
+  image: registry.git.coop/webarch/containers/images/bookworm:20250916
   stage: bookworm
   script:
     - pre-commit install
     - pre-commit run --all-files
     - molecule test --all
-jammy:
-  image: registry.git.coop/webarch/containers/images/jammy:20250113
-  stage: jammy
-  script:
-    - pre-commit install
-    - pre-commit run --all-files
-    - molecule test
 noble:
-  image: registry.git.coop/webarch/containers/images/noble:20250113
+  image: registry.git.coop/webarch/containers/images/noble:20250916
   stage: noble
   script:
     - pre-commit install
     - pre-commit run --all-files
     - molecule test
-# No trixie repo yet
-# https://download.docker.com/linux/debian/dists/
-# trixie:
-#   image: registry.git.coop/webarch/containers/images/trixie:20250113
-#   stage: trixie
-#   script:
-#     - pre-commit install
-#     - pre-commit run --all-files
-#     - molecule test
+trixie:
+  image: registry.git.coop/webarch/containers/images/trixie:20250916
+  stage: trixie
+  script:
+    - pre-commit install
+    - pre-commit run --all-files
+    - molecule test
 ...
