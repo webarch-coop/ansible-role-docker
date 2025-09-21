@@ -14,14 +14,15 @@
     - name: Requirements present
       ansible.builtin.apt:
         pkg:
-          - apt-transport-https
           - ca-certificates
           - curl
           - gnupg
           - lsb-release
+          - python3-apt
           - python3-debian
           - python3-docker
-          - software-properties-common
+          # https://github.com/wimpysworld/deb-get/issues/1215
+          # - software-properties-common
         state: present
         update_cache: true
 
