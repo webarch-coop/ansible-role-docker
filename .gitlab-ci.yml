@@ -35,7 +35,8 @@ before_script:
 stages:
   - trixie
   - bookworm
-  - forky
+  # forky is not yet supported
+  # - forky
   - noble
   - resolute
 bookworm:
