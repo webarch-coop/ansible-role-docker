@@ -11,7 +11,7 @@
 docker: false
 docker_compose_v1: false
 docker_compose_version_v1: "1.29.2"
-# docker_daemon:
+docker_daemon:
 #   dns:
 #     - 1.1.1.1
 #     - 1.1.2.2
@@ -19,8 +19,8 @@ docker_compose_version_v1: "1.29.2"
 #     - 9.9.9.9
 #   storage-driver: overlay2
 #   log-driver: syslog
-#   # Use NFTables
-#   firewall-backend: nftables
+  # Use NFTables
+  firewall-backend: nftables
 #   # Mailcow Docker Settings:
 #   ipv6: true
 #   fixed-cidr-v6: fd00:dead:beef:c0::/80

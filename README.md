@@ -18,6 +18,7 @@ docker_daemon:
     - 1.1.1.1
     - 8.8.8.8
     - 9.9.9.9
+docker_systemd_units: []
 ```
 
 The role uses `.sources` rather than `.list` files for `apt` and it also checks the `gpg` public key used to sign packages against the [vars/main.yml](variables set int his role) and limits what packages can be installed from the Docker repo, based on the Debian wiki page with [instructions to connect to a third-party repository](https://wiki.debian.org/DebianRepository/UseThirdParty).
@@ -26,6 +27,27 @@ This role requires [jc](https://github.com/kellyjonbrazil/jc) version `1.20.2` o
 
 ```bash
 pip3 install jc
+```
+
+Version `4.0.0` and latest versions of this role default to assuming that `nftables` are used for the firewall backend, the [netfilter role](https://git.coop/webarch/netfilter) role can be used to enable and configure `nftables` and the [nftjson](https://git.coop/webarch/nftjson) role can be used to convert `nft` rules into JSON.
+
+In addition Version `4.0.0` and latest versions of this role expect the [sysctl](https://git.coop/webarch/sysctl) role to be used to configure `/etc/sysctl.conf`, this is needed when `nftables` is used, for example:
+
+```yaml
+sysctl: true
+sysctl_files:
+  - path: /etc/sysctl.conf
+    state: present
+    conf:
+      - name: net.ipv4.ip_forward
+        value: 1
+        state: present
+      - name: net.ipv6.conf.all.forwarding
+        value: 1
+        state: present
+      - name: net.ipv6.conf.default.forwarding
+        value: 1
+        state: present
 ```
 
 The primary URL of this repo is [`https://git.coop/webarch/docker`](https://git.coop/webarch/docker) however it is also [mirrored to GitHub](https://github.com/webarch-coop/ansible-role-docker) and [available via Ansible Galaxy](https://galaxy.ansible.com/chriscroome/docker).
