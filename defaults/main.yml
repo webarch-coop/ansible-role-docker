@@ -36,7 +36,7 @@ docker_pkg:
   - python3-debian
 # The default /usr/lib/systemd/system/docker.service doesn't include nftables.service
 docker_systemd_units:
-  - name: docker-override
+  - name: docker
     state: enabled
     files:
       - path: /etc/systemd/system/docker.service.d/override.conf
