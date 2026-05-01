@@ -34,5 +34,15 @@ docker_pkg:
   - docker-compose-plugin
   # - docker-scan-plugin
   - python3-debian
+# The default /usr/lib/systemd/system/docker.service doesn't include nftables.service
+docker_systemd_units:
+  - name: docker-override
+    state: enabled
+    files:
+      - path: /etc/systemd/system/docker.service.d/override.conf
+        conf:
+          Unit:
+            After: network-online.target nss-lookup.target docker.socket firewalld.service nftables.service containerd.service time-set.target
+            Wants: network-online.target nftables.service containerd.service
 docker_verify: true
 ...

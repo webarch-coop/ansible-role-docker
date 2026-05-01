@@ -52,6 +52,18 @@
       tags:
         - docker_install
 
+    - name: Include systemd role
+      ansible.builtin.include_role:
+        name: systemd
+        tasks_from: unit_present.yml
+      loop: "{{ docker_systemd_units }}"
+      loop_control:
+        loop_var: systemd_unit
+        label: "{{ systemd_unit.name }}"
+      when:
+        - docker_systemd_units is defined
+        - docker_systemd_units != []
+
     - name: Include install Docker Compose version 1 tasks
       ansible.builtin.include_tasks: compose_v1.yml
       when: docker_compose_v1 is defined
