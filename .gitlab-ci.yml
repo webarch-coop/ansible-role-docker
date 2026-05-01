@@ -35,7 +35,7 @@ before_script:
 stages:
   - trixie
   - bookworm
-  # forky is not yet supported
+  # The repository 'https://download.docker.com/linux/debian forky Release' does not have a Release file.
   # - forky
   - noble
   - resolute
