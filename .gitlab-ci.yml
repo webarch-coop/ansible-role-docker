@@ -1,4 +1,4 @@
-# Copyright 2018-2025 Chris Croome
+# Copyright 2018-2026 Chris Croome
 #
 # This file is part of the Webarchitects Docker Ansible role.
 #
@@ -37,7 +37,7 @@ stages:
   - bookworm
   - noble
 bookworm:
-  image: registry.git.coop/webarch/containers/images/bookworm:20251009
+  image: registry.git.coop/webarch/containers/images/bookworm:20260424
   stage: bookworm
   script:
     - molecule test --all

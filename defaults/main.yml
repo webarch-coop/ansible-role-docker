@@ -1,4 +1,4 @@
-# Copyright 2018-2025 Chris Croome
+# Copyright 2018-2026 Chris Croome
 #
 # This file is part of the Webarchitects Docker Ansible role.
 #
@@ -19,6 +19,8 @@ docker_compose_version_v1: "1.29.2"
 #     - 9.9.9.9
 #   storage-driver: overlay2
 #   log-driver: syslog
+#   # Use NFTables
+#   firewall-backend: nftables
 #   # Mailcow Docker Settings:
 #   ipv6: true
 #   fixed-cidr-v6: fd00:dead:beef:c0::/80

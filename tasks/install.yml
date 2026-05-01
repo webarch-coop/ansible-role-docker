@@ -1,4 +1,4 @@
-# Copyright 2018-2025 Chris Croome
+# Copyright 2018-2026 Chris Croome
 #
 # This file is part of the Webarchitects Docker Ansible role.
 #
@@ -45,17 +45,35 @@
         group: root
         mode: "0755"
 
-    - name: Docker daemon configuration present
-      ansible.builtin.template:
-        src: templates/daemon.json.j2
-        dest: /etc/docker/daemon.json
-        owner: root
-        group: root
-        mode: "0644"
+    - name: Docker daemon config
+      block:
+
+        # TODO
+        # This should be in a seperate sysctl role
+        - name: Set net.ipv4.ip_forward to 1 in /etc/sysctl.conf
+          ansible.posix.sysctl:
+            name: net.ipv4.ip_forward
+            value: '1'
+            state: present
+            sysctl_file: /etc/sysctl.conf
+            sysctl_set: true
+            reload: true
+          when:
+            - docker_daemon['firewall-backend'] is defined
+            - docker_daemon['firewall-backend'] == "nftables"
+
+        - name: Docker daemon configuration present
+          ansible.builtin.template:
+            src: templates/daemon.json.j2
+            dest: /etc/docker/daemon.json
+            owner: root
+            group: root
+            mode: "0644"
+          notify: Restart docker
+
       when:
         - docker_daemon is defined
         - docker_daemon | length > 0
-      notify: Restart docker
 
     - name: Docker started
       ansible.builtin.service:
