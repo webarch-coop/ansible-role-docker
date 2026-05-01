@@ -46,7 +46,7 @@
         loop_var: docker_cmd
       when: docker_compose_alternatives_query.rc == 0
 
-  when: ( docker_compose_v1 is defined ) and ( not docker_compose_v1 | bool )
+  when: (docker_compose_v1 is defined) and (not docker_compose_v1 | bool)
   tags:
     - docker
     - docker_compose_v1
@@ -79,7 +79,7 @@
             docker_compose_v1_upgrade: true
           when: docker_compose_v1_installed is version(docker_compose_version_v1, '<')
 
-      when: ( docker_compose_v1_path is defined ) and ( "docker-compose" in docker_compose_v1_path.stdout )
+      when: (docker_compose_v1_path is defined) and ("docker-compose" in docker_compose_v1_path.stdout)
 
     - name: Install or upgrade Docker Compose Version 1
       block:
@@ -131,7 +131,7 @@
           check_mode: false
           changed_when: false
           register: docker_compose_v1_check
-          failed_when: ( docker_compose_v1_check.rc != 0 ) or ( docker_compose_version_v1 not in docker_compose_v1_check.stdout )
+          failed_when: (docker_compose_v1_check.rc != 0) or (docker_compose_version_v1 not in docker_compose_v1_check.stdout)
 
         - name: Docker Compose Version 1 Bash completion in place
           ansible.builtin.get_url:
@@ -144,7 +144,7 @@
 
       when:
         - not ansible_check_mode | bool
-        - ( docker_compose_v1_path.rc == 1 ) or ( docker_compose_v1_upgrade is defined and docker_compose_v1_upgrade | bool )
+        - (docker_compose_v1_path.rc == 1) or (docker_compose_v1_upgrade is defined and docker_compose_v1_upgrade | bool)
 
     - name: Check the latest version of Docker Compose Switch
       ansible.builtin.uri:
@@ -197,7 +197,7 @@
         priority: 1
       when:
         - docker_compose_v1_state.stat.exists | bool
-        - ( "/usr/local/bin/docker-compose-v1 - priority 1" not in docker_compose_alternatives_existing.stdout_lines ) or ( docker_compose_alternatives_existing.rc != 0 )
+        - ("/usr/local/bin/docker-compose-v1 - priority 1" not in docker_compose_alternatives_existing.stdout_lines) or (docker_compose_alternatives_existing.rc != 0)
 
     - name: Stat /usr/local/bin/docker-switch
       ansible.builtin.stat:
@@ -212,19 +212,19 @@
         priority: 99
       when:
         - docker_compose_switch_state.stat.exists | bool
-        - ( "/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines ) or ( docker_compose_alternatives_existing.rc != 0 )
+        - ("/usr/local/bin/compose-switch - priority 99" not in docker_compose_alternatives_existing.stdout_lines) or (docker_compose_alternatives_existing.rc != 0)
 
     - name: Check compose-switch is working for docker-compose
       ansible.builtin.command: docker-compose --ansi=never version
       check_mode: false
       changed_when: false
       register: docker_compose_switch_check
-      failed_when: ( docker_compose_switch_check.rc != 0 ) or ( "Docker Compose version" not in docker_compose_switch_check.stdout )
+      failed_when: (docker_compose_switch_check.rc != 0) or ("Docker Compose version" not in docker_compose_switch_check.stdout)
       when:
         - docker_compose_v1_state.stat.exists | bool
         - docker_compose_switch_state.stat.exists | bool
 
-  when: ( docker_compose_v1 is defined ) and ( docker_compose_v1 | bool )
+  when: (docker_compose_v1 is defined) and (docker_compose_v1 | bool)
   tags:
     - docker
     - docker_compose_v1

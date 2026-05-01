@@ -11,19 +11,63 @@
 - name: Verify Docker variables
   block:
 
-    - name: Debug the hostvars variable names that start with docker_
+    - name: Debug dockervarnames
       ansible.builtin.debug:
         var: dockervarnames
-        verbosity: "{% if ansible_check_mode | bool %}3{% else %}4{% endif %}"
+        verbosity: "{% if ansible_check_mode | bool or ansible_diff_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
 
-    - name: Debug the hostvars variable names that start with docker_
+    - name: Debug dockerhostvars
       ansible.builtin.debug:
         var: dockerhostvars
-        verbosity: "{% if ansible_check_mode | bool %}3{% else %}4{% endif %}"
+        verbosity: "{% if ansible_check_mode | bool or ansible_diff_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
 
-    - name: Check docker_ variables using meta/argument_specs.yml
+    - name: Debug lookup meta/argument_specs.yml
+      ansible.builtin.debug:
+        msg: "{{ lookup('ansible.builtin.file', 'meta/argument_specs.yml', errors='strict') }}"
+        verbosity: "{% if ansible_check_mode | bool or ansible_diff_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
+
+    - name: Debug lookup meta/argument_specs.yml type
+      ansible.builtin.debug:
+        msg: "{{ lookup('ansible.builtin.file', 'meta/argument_specs.yml', errors='strict') | ansible.builtin.type_debug }}"
+        verbosity: "{% if ansible_check_mode | bool or ansible_diff_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
+
+    - name: Debug lookup meta/internal_argument_specs.yml
+      ansible.builtin.debug:
+        msg: "{{ lookup('ansible.builtin.file', 'meta/internal_argument_specs.yml', errors='strict') }}"
+        verbosity: "{% if ansible_check_mode | bool or ansible_diff_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
+
+    - name: Debug lookup meta/internal_argument_specs.yml type
+      ansible.builtin.debug:
+        msg: "{{ lookup('ansible.builtin.file', 'meta/internal_argument_specs.yml', errors='strict') | ansible.builtin.type_debug }}"
+        verbosity: "{% if ansible_check_mode | bool or ansible_diff_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
+
+    - name: Set a fact for the argument spec and internal argument spec
+      ansible.builtin.set_fact:
+        docker_argument_spec: "{{ docker_argument_spec_lookup | ansible.builtin.from_yaml }}"
+        docker_internal_argument_spec: "{{ docker_internal_argument_spec_lookup | ansible.builtin.from_yaml }}"
+      vars:
+        docker_argument_spec_lookup: "{{ lookup('ansible.builtin.file', 'meta/argument_specs.yml', errors='strict') }}"
+        docker_internal_argument_spec_lookup: "{{ lookup('ansible.builtin.file', 'meta/internal_argument_specs.yml', errors='strict') }}"
+
+    - name: Set a fact for the combined argument spec and internal argument spec
+      ansible.builtin.set_fact:
+        docker_combined_argument_spec: "{{ docker_argument_spec | ansible.builtin.combine(docker_internal_argument_spec, recursive=true) }}"
+
+    - name: Check docker_ variables using the combined argument spec
       ansible.builtin.validate_argument_spec:
-        argument_spec: "{{ (lookup('ansible.builtin.file', 'meta/argument_specs.yml') | from_yaml)['argument_specs']['main']['options'] }}"
+        argument_spec: "{{ docker_combined_argument_spec['argument_specs']['main']['options'] }}"
         provided_arguments: "{{ dockerhostvars }}"
 
   when:

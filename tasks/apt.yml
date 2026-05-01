@@ -39,7 +39,7 @@
       loop_control:
         loop_var: file
         label: "{{ file.path | basename }}"
-      when: ( docker_old_apt_list_files.matched >= 1 )
+      when: (docker_old_apt_list_files.matched >= 1)
 
     - name: Disable legacy Docker apt list files
       ansible.builtin.command: "mv {{ file.path }} {{ file.path }}.ansible.save"
@@ -48,7 +48,7 @@
       loop_control:
         loop_var: file
         label: "{{ file.path | basename }}"
-      when: ( docker_old_apt_list_files.matched >= 1 )
+      when: (docker_old_apt_list_files.matched >= 1)
 
     - name: Apt keyrings directory present
       ansible.builtin.file:
@@ -89,7 +89,7 @@
           args:
             executable: "{{ ansible_facts.ansible_local.bash.path }}"
           changed_when: false
-          when: ( docker_tmp_asc_file.changed | bool ) or ( not docker_gpg_file.stat.exists | bool )
+          when: (docker_tmp_asc_file.changed | bool) or (not docker_gpg_file.stat.exists | bool)
 
         - name: Stat Docker gpg dearmored file
           ansible.builtin.stat:
@@ -230,7 +230,7 @@
                     before: "{{ docker_sources_contents_prior | ansible.builtin.to_nice_yaml }}"
                     after: "{{ docker_sources.repo | string | community.general.jc('ini') | ansible.builtin.to_nice_yaml }}"
                   when:
-                    - ( ansible_check_mode | bool ) or ( ansible_diff_mode | bool )
+                    - (ansible_check_mode | bool) or (ansible_diff_mode | bool)
                     - docker_sources_contents_prior is defined
                     - docker_sources.repo is defined
 
@@ -252,7 +252,7 @@
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
-      when: ( docker_sources.changed | bool ) or ( docker_preferences.changed | bool )
+      when: (docker_sources.changed | bool) or (docker_preferences.changed | bool)
 
   tags:
     - docker

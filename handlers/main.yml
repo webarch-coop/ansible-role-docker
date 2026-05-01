@@ -8,11 +8,20 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Docker Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-- name: Restart docker
-  ansible.builtin.service:
-    name: docker
-    state: restarted
-  listen: Restart docker
+- name: Docker handlers
+  block:
+
+    - name: Systemd daemon-reload
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+      listen: Systemd daemon-reload
+
+    - name: Restart docker
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+      listen: Restart docker
+
   tags:
     - docker
 ...

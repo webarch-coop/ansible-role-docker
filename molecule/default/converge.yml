@@ -35,4 +35,9 @@
         name: docker
       vars:  # noqa var-naming[no-role-prefix]
         docker: true
+
+    - name: Include argument spec checks for the Docker role
+      ansible.builtin.include_role:
+        name: docker
+        tasks_from: verify.yml
 ...

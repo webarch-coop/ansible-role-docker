@@ -1,0 +1,133 @@
+# Copyright 2018-2026 Chris Croome
+#
+# This file is part of the Webarchitects Docker Ansible role.
+#
+# The Webarchitects Docker Ansible role is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# The Webarchitects Docker Ansible role is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with the Webarchitects Docker Ansible role. If not, see <https://www.gnu.org/licenses/>.
+---
+argument_specs:
+  main:
+    author: Chris Croome
+    description: Ansible Role to install Docker CE on Debian and Ubuntu.
+    short_description: The main entry point for the Docker role.
+    options:
+      docker_argument_spec:
+        type: dict
+        required: false
+        description: Internal variable for the argument spec.
+      docker_combined_argument_spec:
+        type: dict
+        required: false
+        description: Internal variable for the combined argument spec.
+      docker_internal_argument_spec:
+        type: dict
+        required: false
+        description: Internal variable for the internal argument spec.
+      docker_apt_sources:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.stat module.
+      docker_asc_file:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.stat module.
+      docker_compose_alternatives_existing:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.command module.
+      docker_compose_alternatives_query:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.command module.
+      docker_compose_switch_check:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.command module.
+      docker_compose_switch_headers:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.uri module.
+      docker_compose_switch_state:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.stat module.
+      docker_compose_v1_check:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.command module.
+      docker_compose_v1_download_dir:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.tempfile module.
+      docker_compose_v1_path:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.command module.
+      docker_compose_v1_sha256_b64encoded:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.slurp module.
+      docker_compose_v1_state:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.stat module.
+      docker_compose_v1_version:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.command module.
+      docker_gpg:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.command module.
+      docker_gpg_file:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.stat module.
+      docker_gpg_fingerprints_found:
+        type: list
+        required: false
+        description: List of GPG fingerprints found.
+      docker_old_apt_list_files:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.find module.
+      docker_preferences:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.template module.
+      docker_sources:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.deb822_repository module.
+      docker_sources_check:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.deb822_repository module.
+      docker_sources_contents:
+        type: dict
+        required: false
+        description: JSON representation of the docker.sources contents.
+      docker_sources_contents_b64encoded:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.slurp module.
+      docker_sources_contents_prior:
+        type: dict
+        required: false
+        description: JSON representation of the docker.sources contents.
+      docker_sources_path:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.stat module.
+      docker_systemd_include:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.include_role module.
+      docker_tmp_asc_file:
+        type: dict
+        required: false
+        description: Results from running the Ansible ansible.builtin.get_url module.
+...

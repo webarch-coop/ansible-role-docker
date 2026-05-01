@@ -75,6 +75,19 @@
         - docker_daemon is defined
         - docker_daemon | length > 0
 
+    - name: Include systemd role
+      ansible.builtin.include_role:
+        name: systemd
+        tasks_from: unit_present.yml
+      loop: "{{ docker_systemd_units }}"
+      loop_control:
+        loop_var: systemd_unit
+        label: "{{ systemd_unit.name }}"
+      register: docker_systemd_include
+      when:
+        - docker_systemd_units is defined
+        - docker_systemd_units != []
+
     - name: Docker started
       ansible.builtin.service:
         name: docker
