@@ -12,6 +12,7 @@ docker: false
 docker_compose_v1: false
 docker_compose_version_v1: "1.29.2"
 docker_daemon:
+  firewall-backend: nftables
 #   dns:
 #     - 1.1.1.1
 #     - 1.1.2.2
@@ -19,8 +20,6 @@ docker_daemon:
 #     - 9.9.9.9
 #   storage-driver: overlay2
 #   log-driver: syslog
-  # Use NFTables
-  firewall-backend: nftables
 #   # Mailcow Docker Settings:
 #   ipv6: true
 #   fixed-cidr-v6: fd00:dead:beef:c0::/80
@@ -34,7 +33,7 @@ docker_pkg:
   - docker-compose-plugin
   # - docker-scan-plugin
   - python3-debian
-# The default /usr/lib/systemd/system/docker.service doesn't include nftables.service
+# The default /usr/lib/systemd/system/docker.service file doesn't include nftables.service
 docker_systemd_units:
   - name: docker
     state: enabled
@@ -43,6 +42,6 @@ docker_systemd_units:
         conf:
           Unit:
             After: network-online.target nss-lookup.target docker.socket firewalld.service nftables.service containerd.service time-set.target
-            Wants: network-online.target nftables.service containerd.service
+            Requires: docker.socket nftables.service
 docker_verify: true
 ...

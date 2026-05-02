@@ -23,13 +23,9 @@ docker_systemd_units: []
 
 The role uses `.sources` rather than `.list` files for `apt` and it also checks the `gpg` public key used to sign packages against the [vars/main.yml](variables set int his role) and limits what packages can be installed from the Docker repo, based on the Debian wiki page with [instructions to connect to a third-party repository](https://wiki.debian.org/DebianRepository/UseThirdParty).
 
-This role requires [jc](https://github.com/kellyjonbrazil/jc) version `1.20.2` or later to be installed on the Ansible controller using `pip` for the parsing of GPG command output, `jc` can be [installed using Ansible](https://git.coop/webarch/jc/), or simply run:
+This role requires [jc](https://github.com/kellyjonbrazil/jc) version `1.20.2` or later to be installed on the Ansible controller, Debian Bookwork has [jc 1.22.5](https://packages.debian.org/bookworm/jc).
 
-```bash
-pip3 install jc
-```
-
-Version `4.0.0` and latest versions of this role default to assuming that `nftables` are used for the firewall backend, the [netfilter role](https://git.coop/webarch/netfilter) role can be used to enable and configure `nftables` and the [nftjson](https://git.coop/webarch/nftjson) role can be used to convert `nft` rules into JSON.
+Version `4.0.0` and later versions of this role default to assuming that `nftables` is used for the firewall backend, the [netfilter role](https://git.coop/webarch/netfilter) role can be used to enable and configure `nftables` and the [nftjson](https://git.coop/webarch/nftjson) role can be used to convert `nft` rules into YAML.
 
 In addition Version `4.0.0` and latest versions of this role expect the [sysctl](https://git.coop/webarch/sysctl) role to be used to configure `/etc/sysctl.conf`, this is needed when `nftables` is used, for example:
 
