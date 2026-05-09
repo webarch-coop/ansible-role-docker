@@ -50,6 +50,10 @@ argument_specs:
         type: dict
         required: false
         description: Results from running the Ansible ansible.builtin.uri module.
+      docker_compose_switch_latest:
+        type: str
+        required: false
+        description: The latest version of Docker Compose Switch.
       docker_compose_switch_state:
         type: dict
         required: false
@@ -62,6 +66,10 @@ argument_specs:
         type: dict
         required: false
         description: Results from running the Ansible ansible.builtin.tempfile module.
+      docker_compose_v1_installed:
+        type: str
+        required: false
+        description: Docker compose version 1.x version string.
       docker_compose_v1_path:
         type: dict
         required: false
@@ -70,10 +78,22 @@ argument_specs:
         type: dict
         required: false
         description: Results from running the Ansible ansible.builtin.slurp module.
+      docker_compose_v1_sha256_file:
+        type: str
+        required: false
+        description: Docker Compose Version 1 base64 encoded version of the sha256 checksum decoded.
+      docker_compose_v1_sha256:
+        type: str
+        required: false
+        description: Docker Compose Version 1 sha256 checksum.
       docker_compose_v1_state:
         type: dict
         required: false
         description: Results from running the Ansible ansible.builtin.stat module.
+      docker_compose_v1_upgrade:
+        type: bool
+        required: false
+        description: Boolean to indicated that a newer version of Docker Compose Version 1 is  to be installed.
       docker_compose_v1_version:
         type: dict
         required: false
